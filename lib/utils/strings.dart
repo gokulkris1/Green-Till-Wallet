@@ -18,5 +18,7 @@ const String Lastname = "Last Name";
 const String Confirmpassword = "Confirm Password";
 const String Selectcountry = "Select Country";
 const String Mobilenumber = "Mobile Number";
+const String AgreeTothe = "Agree to the ";
+const String termsandcondition = "Terms & Conditions";
 
 

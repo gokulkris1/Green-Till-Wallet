@@ -19,6 +19,7 @@ class _SignUpScreenState extends BaseState<SignUpScreen> with BasicScreen{
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password= TextEditingController();
   final TextEditingController _confirmpassword= TextEditingController();
+  final TextEditingController _selectcountry= TextEditingController();
   final TextEditingController _mobilenumber= TextEditingController();
   bool _value = false;
 
@@ -106,8 +107,23 @@ class _SignUpScreenState extends BaseState<SignUpScreen> with BasicScreen{
                    width: deviceWidth*0.8,
                    child: getCommonTextFormField(
                      context: context,
+                     controller: _selectcountry,
+                     hintText: Confirmpassword,
+                   ),
+                 ),
+
+                 const SizedBox(height: 15,),
+                 SizedBox(
+                   width: deviceWidth*0.8,
+                   child: getCommonTextFormField(
+                     context: context,
                      controller: _mobilenumber,
                      hintText: Mobilenumber,
+                     prefixIcon: InkWell(
+                         onTap: () {
+                           //_toggle();
+                         },
+                         child:  Image.asset(IC_INDIAN_FLAG)),
                    ),
                  ),
                  const SizedBox(height: 20,),
@@ -152,19 +168,18 @@ class _SignUpScreenState extends BaseState<SignUpScreen> with BasicScreen{
                              ),
                            )),
                        SizedBox(
-                         width: 8,
+                         width: 12,
                        ),
-                       Text(
-                         "Accept Terms & Conditions",
-                         style: TextStyle(
-                             color: colorBlack,
-                             fontSize: FORGET_PASSWORD_TEXT_FONT_SIZE,
-                             fontWeight: FontWeight.w400,
-                             fontFamily: 'RubikRegular'),
-                       ),
+
+                           getSmallText(AgreeTothe,fontSize: SUBTITLE_FONT_SIZE,color: colorAccentLight),
+                           getTitle(termsandcondition,bold: true,fontSize: SUBTITLE_FONT_SIZE,color:colorAccentLight ),
+
                      ],
                    ),
                  ),
+                 const SizedBox(height: 20,),
+
+                 getButton(Signup, (){},width:deviceWidth*0.8, fontsize:BUTTON_FONT_SIZE ),
 
                ],
              ),

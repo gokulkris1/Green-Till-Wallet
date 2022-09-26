@@ -6,5 +6,6 @@ const IC_PASSWORD_SHOW = "assets/images/Ic_password_show.png";
 const IC_PASSWORD_HIDE = "assets/images/Ic_password_hide.png";
 const IC_FACEBOOK = "assets/images/Ic_facebook.png";
 const IC_GOOGLE = "assets/images/Ic_google.png";
+const IC_INDIAN_FLAG = "assets/images/Ic_indian_flag.png";
 
 
