@@ -29,12 +29,12 @@ class _SignUpScreenState extends BaseState<SignUpScreen> with BasicScreen{
      resizeToAvoidBottomInset: false,
      backgroundColor: colorWhite,
      body: SafeArea(
-       child: SingleChildScrollView(
-         child: Container(
-           height: MediaQuery.of(context).size.height,
-           width: MediaQuery.of(context).size.width,
-           child: Padding(
-             padding:  const EdgeInsets.symmetric(horizontal: HORIZONTAL_PADDING,vertical: VERTICAL_PADDING),
+       child: Container(
+         height: MediaQuery.of(context).size.height,
+         width: MediaQuery.of(context).size.width,
+         child: Padding(
+           padding:  const EdgeInsets.symmetric(horizontal: HORIZONTAL_PADDING,vertical: VERTICAL_PADDING),
+           child: SingleChildScrollView(
              child: Column(
                mainAxisAlignment: MainAxisAlignment.start,
                crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,7 +108,12 @@ class _SignUpScreenState extends BaseState<SignUpScreen> with BasicScreen{
                    child: getCommonTextFormField(
                      context: context,
                      controller: _selectcountry,
-                     hintText: Confirmpassword,
+                     hintText: Selectcountry,
+                     suffixIcon: InkWell(
+                         onTap: () {
+                           //_toggle();
+                         },
+                         child: Icon(Icons.keyboard_arrow_down)),
                    ),
                  ),
 
