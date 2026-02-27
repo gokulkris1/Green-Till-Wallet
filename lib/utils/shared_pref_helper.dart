@@ -1,74 +1,68 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefHelper {
-  final SharedPreferences prefs;
-  static SharedPrefHelper instance;
-
-  // key names for prefrence data storage
-  static const String IS_LOGGED_IN_BOOL = "is_logged_in";
-  static const String IS_ACCOUNT_CREATED_BOOL = "is_account_created";
-  //static const String FIREBASE_TOKEN = "firebase_token";
-  static const String ACCESS_TOKEN_STRING = "access_token";
-  static const String USER_DATA = "user_data";
-  static const FIREBASE_TOKEN = "firebase_token";
-
-  // static const String CARD_LIST = "card_list";
-
   SharedPrefHelper._(this.prefs);
 
-  static Future<void> createInstance() async {
-    instance = SharedPrefHelper._(await SharedPreferences.getInstance());
+  final SharedPreferences prefs;
+  static SharedPrefHelper? _instance;
+
+  // key names for preference data storage
+  static const String isLoggedInKey = "is_logged_in";
+  static const String isAccountCreatedKey = "is_account_created";
+  static const String accessTokenKey = "access_token";
+  static const String userDataKey = "user_data";
+  static const String firebaseTokenKey = "firebase_token";
+
+  static SharedPrefHelper get instance {
+    final helper = _instance;
+    if (helper == null) {
+      throw StateError(
+          "SharedPrefHelper has not been initialised. Call createInstance() first.");
+    }
+    return helper;
   }
 
-  void putBool(String key, bool value) {
-    prefs.setBool(key, value);
+  static Future<void> createInstance() async {
+    _instance = SharedPrefHelper._(await SharedPreferences.getInstance());
+  }
+
+  Future<void> putBool(String key, bool value) async {
+    await prefs.setBool(key, value);
   }
 
   bool getBool(String key, {bool defaultValue = false}) {
-    if (prefs.containsKey(key)) {
-      return prefs.getBool(key);
-    }
-    return defaultValue;
+    return prefs.getBool(key) ?? defaultValue;
   }
 
-  void putDouble(String key, double value) {
-    prefs.setDouble(key, value);
+  Future<void> putDouble(String key, double value) async {
+    await prefs.setDouble(key, value);
   }
 
   double getDouble(String key, {double defaultValue = 0.0}) {
-    if (prefs.containsKey(key)) {
-      return prefs.getDouble(key);
-    }
-    return defaultValue;
+    return prefs.getDouble(key) ?? defaultValue;
   }
 
-  void putString(String key, String value) {
-    prefs.setString(key, value);
+  Future<void> putString(String key, String value) async {
+    await prefs.setString(key, value);
   }
 
   String getString(String key, {String defaultValue = ""}) {
-    if (prefs.containsKey(key)) {
-      return prefs.getString(key);
-    }
-    return defaultValue;
+    return prefs.getString(key) ?? defaultValue;
   }
 
-  void putInt(String key, int value) {
-    prefs.setInt(key, value);
+  Future<void> putInt(String key, int value) async {
+    await prefs.setInt(key, value);
   }
 
   int getInt(String key, {int defaultValue = 0}) {
-    if (prefs.containsKey(key)) {
-      return prefs.getInt(key);
-    }
-    return defaultValue;
+    return prefs.getInt(key) ?? defaultValue;
   }
 
-  void clear() {
-    prefs.clear();
+  Future<void> clear() async {
+    await prefs.clear();
   }
 
-  void remove(String key) {
-    prefs.remove(key);
+  Future<void> remove(String key) async {
+    await prefs.remove(key);
   }
 }

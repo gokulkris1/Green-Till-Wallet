@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: constant_identifier_names
 
 const TITLE_TEXT_FONT_SIZE = 24.0;
 const SUBTITLE_FONT_SIZE = 14.0;
@@ -38,7 +38,6 @@ const TEXT_FIELD_FONT_SIZE3 = 24.0;
 const TEXT_FIELD_FONT_SIZE4 = 36.0;
 const TEXT_FIELD_FONT_SIZE5 = 32.0;
 const TEXT_FIELD_FONT_SIZE6 = 40.0;
-
 
 //Padding
 

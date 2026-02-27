@@ -5,8 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:greentill/navigation/navigation_page.dart';
 import 'package:greentill/ui/res/app_localizations.dart';
 import 'package:greentill/ui/res/color_resources.dart';
-import 'package:greentill/ui/screens/login/login_screen.dart';
-import 'package:greentill/ui/screens/signup/signup_screen.dart';
 import 'package:greentill/utils/shared_pref_helper.dart';
 
 import 'bloc/main_bloc.dart';
@@ -21,26 +19,29 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   //FirebaseMessagingService().init();
-  runApp(MultiBlocProvider(
-    providers: [
-      BlocProvider<MainBloc>(
-        create: (BuildContext context) => MainBloc(),
-      ),
-    ],
-    child: const MyApp(),
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.dark,
   ));
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<MainBloc>(
+          create: (BuildContext context) => MainBloc(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-      statusBarBrightness: Brightness.dark,
-    ));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Green Till',
@@ -60,10 +61,12 @@ class MyApp extends StatelessWidget {
       // Returns a locale which will be used by the app
       localeResolutionCallback: (locale, supportedLocales) {
         // Check if the current device locale is supported
-        for (var supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode &&
-              supportedLocale.countryCode == locale.countryCode) {
-            return supportedLocale;
+        if (locale != null) {
+          for (final supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode &&
+                supportedLocale.countryCode == locale.countryCode) {
+              return supportedLocale;
+            }
           }
         }
         // If the locale of the device is not supported, use the first one
@@ -72,19 +75,12 @@ class MyApp extends StatelessWidget {
       },
 
       theme: ThemeData(
-        // primarySwatch: colortheme,
-        primaryColor: colortheme,
-        backgroundColor: colorWhite
+        colorScheme: ColorScheme.fromSeed(seedColor: colortheme),
+        scaffoldBackgroundColor: colorWhite,
+        useMaterial3: true,
+        fontFamily: "AvenirBook",
       ),
-      // theme: ThemeData(
-      //     primarySwatch: Colors.lightBlue,
-      //     primaryColor: colorBackgroundButton,
-      //     backgroundColor: Colors.white,
-      //     visualDensity: VisualDensity.adaptivePlatformDensity,
-      //     fontFamily: "Proxima Nova"),
-      //
-      home:  SignUpScreen(),
+      home: const NavigationPage(),
     );
   }
 }
-

@@ -1,24 +1,28 @@
 part of 'main_bloc.dart';
 
-
 @immutable
-abstract class MainEvent {}
-
-// this displays error message
-class ShowError extends MainEvent {}
-
-// to show splash screen
-class SplashIn extends MainEvent {
-  SplashIn();
+abstract class MainEvent {
+  const MainEvent();
 }
 
-class SignUp extends MainEvent {
-  SignUp();
+class AppLaunched extends MainEvent {
+  const AppLaunched();
 }
 
-class CreateAccount1 extends MainEvent {
-  CreateAccount1();
+class NavigateToLogin extends MainEvent {
+  const NavigateToLogin();
 }
 
+class NavigateToSignUp extends MainEvent {
+  const NavigateToSignUp();
+}
 
+class CompleteAuthentication extends MainEvent {
+  const CompleteAuthentication();
+}
 
+class SetLoading extends MainEvent {
+  const SetLoading(this.enabled);
+
+  final bool enabled;
+}

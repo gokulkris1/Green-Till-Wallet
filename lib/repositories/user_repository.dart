@@ -1,29 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:greentill/utils/shared_pref_helper.dart';
 
 class UserRepository {
-  SharedPrefHelper prefs = SharedPrefHelper.instance;
-
-  //dev
-  // String baseUrl = "https://wearehere-api.apps.openxcell.dev";
-  // String baseUrlHttps = "wearehere-api.apps.openxcell.dev";
-
-  // local
-  //  String baseUrl = "http://192.168.2.153:8451";
-  //  String baseUrlHttps = "192.168.2.153:8451";
-
-  // Live
-  //  String baseUrl = "http://192.168.2.153:8451";
-  //  String baseUrlHttps = "192.168.2.153:8451";
-
   UserRepository();
+
+  final SharedPrefHelper prefs = SharedPrefHelper.instance;
 
   static UserRepository getInstance() {
     return UserRepository();
   }
 
-  Future<bool> isLoggedIn() async {
-    return prefs.getBool(SharedPrefHelper.IS_LOGGED_IN_BOOL) ?? false;
+  bool isLoggedIn() {
+    return prefs.getBool(SharedPrefHelper.isLoggedInKey);
   }
 
   // Future<LoginResponse> login(String email, String password, String fcmtoken) async {
@@ -92,6 +79,4 @@ class UserRepository {
   //   LoginResponse model = LoginResponse.fromJson(map);
   //   return model;
   // }
-
-
 }

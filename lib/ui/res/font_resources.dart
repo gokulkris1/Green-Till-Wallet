@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 const Montserrat_Light = "Montserrat_Light";
 const Montserrat_SemiBold = "Montserrat_Semi_Bold";
 const Montserrat_Regular = "Montserrat_Regular";

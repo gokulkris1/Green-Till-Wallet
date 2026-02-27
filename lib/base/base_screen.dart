@@ -1,165 +1,150 @@
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:greentill/bloc/main_bloc.dart';
-import 'package:greentill/models/common/globals.dart';
 import 'package:greentill/ui/res/app_localizations.dart';
 import 'package:greentill/ui/res/color_resources.dart';
 import 'package:greentill/ui/res/dimen_resources.dart';
 import 'package:greentill/utils/common_widgets.dart';
 
-
-abstract class BaseStatefulWidget extends StatefulWidget
-    with WidgetsBindingObserver {}
+abstract class BaseStatefulWidget extends StatefulWidget {
+  const BaseStatefulWidget({super.key});
+}
 
 abstract class BaseState<Screen extends BaseStatefulWidget>
-    extends State<Screen> with RouteAware /*, WidgetsBindingObserver*/ {}
+    extends State<Screen> with RouteAware {}
 
 mixin BasicScreen<Screen extends BaseStatefulWidget> on BaseState<Screen> {
-  AppLocalizations localizations;
-  MainBloc bloc;
+  late AppLocalizations localizations;
+  late MainBloc bloc;
 
   Color appBarColor = colorWhite;
   bool isLoading = false;
   bool isBlurred = false;
   bool isShowMessage = false;
-  bool isPostAnswerPopup = false;
   String message = "";
-  Function f;
-  String postanswermessage = "";
-  Function onclick;
-  BuildContext baseContext;
+  VoidCallback? onMessageDismissed;
   bool gestureEnabled = false;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
-    if (Platform.isIOS) SystemChrome.setEnabledSystemUIOverlays([]);
     changeStatusColor(appBarColor);
   }
 
-  changeStatusColor(Color color) async {
+  void changeStatusColor(Color color) {
     appBarColor = color;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: color,
+      statusBarBrightness: Brightness.dark,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    baseContext = context;
-    Globals.globalContext = context;
     localizations = AppLocalizations.of(context);
-    bloc = BlocProvider.of<MainBloc>(context);
+    bloc = context.read<MainBloc>();
     return Scaffold(
       extendBody: false,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0),
+        preferredSize: const Size.fromHeight(0),
         child: AppBar(
           backgroundColor: appBarColor,
           elevation: 0,
         ),
       ),
-      // backgroundColor: Colors.transparent,
-      backgroundColor:
-           colorWhite,
-
+      backgroundColor: colorWhite,
       body: SafeArea(
-        child: Stack(children: [
-          isShowMessage
-              ? Scaffold(
-                  body: AlertDialog(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        getTitle("Green Till",
-                            fontSize: 18, bold: true, color: colorGreen),
-                        GestureDetector(
-                          onTap: f,
-                          child: getSmallIcon("x",
-                            color: colorBlack,
-                            bold: false,
-                            fontSize: BODY2_TEXT_FONT_SIZE,
-                            isEnd: false
-                          ),
-                        ),
-                      ],
-                    ),
-                    content: GestureDetector(
-                      child: Text(message ?? "Something went wrong!"),
-                      onTap: gestureEnabled
-                          ? () {
-                              Navigator.pop(context);
-                            }
-                          : null,
-                    ),
-                    // actions: <Widget>[
-                    //   FlatButton(
-                    //     onPressed: f,
-                    //     child: Container(
-                    //       margin: EdgeInsets.only(
-                    //           top: 7, right: 0, left: 30, bottom: 0),
-                    //       child: getSmallIcon("x",
-                    //           color: colorBlack,
-                    //           bold: false,
-                    //           fontSize: BODY2_TEXT_FONT_SIZE,
-                    //           isEnd: true),
-                    //     ),
-                    //   )
-                    // ],
+        child: Stack(
+          children: [
+            buildBody(context),
+            if (isBlurred)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                ),
+              ),
+            if (isLoading)
+              const Positioned.fill(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("Loading..."),
+                      SizedBox(height: 16),
+                      CircularProgressIndicator(),
+                    ],
                   ),
-                )
-
-                  : isLoading
-                      ? Scaffold(
-                          body: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                const Text("Loading..."),
-                                Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: const CircularProgressIndicator()),
-                              ],
+                ),
+              ),
+            if (isShowMessage)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: gestureEnabled ? onMessageDismissed : null,
+                  child: Center(
+                    child: AlertDialog(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          getTitle("Green Till",
+                              fontSize: 18, bold: true, color: colorGreen),
+                          GestureDetector(
+                            onTap: onMessageDismissed,
+                            child: getSmallIcon(
+                              "x",
+                              color: colorBlack,
+                              fontSize: BODY2_TEXT_FONT_SIZE,
                             ),
                           ),
-                        )
-                      : isBlurred
-                          ? const Scaffold(
-                              backgroundColor: Colors.transparent,
-                              body: Center(),
-                            )
-                          : buildBody(context),
-        ]),
+                        ],
+                      ),
+                      content: Text(
+                          message.isEmpty ? "Something went wrong!" : message),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  AppBar buildAppBar(BuildContext context) {
-    return null;
-  }
-
   Widget buildBody(BuildContext context);
 
-  changeLoadStatus() {
+  void changeLoadStatus() {
     setState(() {
-      this.isLoading = !this.isLoading;
+      isLoading = !isLoading;
     });
   }
 
-  changeBlurredStatus() {
+  void changeBlurredStatus() {
     setState(() {
-      this.isBlurred = !this.isBlurred;
+      isBlurred = !isBlurred;
     });
   }
 
-  showMessage(String message, Function f, [bool gestureEnabled = false]) {
+  void showMessage(
+    String newMessage,
+    VoidCallback? onDismiss, [
+    bool allowGestureDismiss = false,
+  ]) {
     setState(() {
-      this.isShowMessage = true;
-      this.message = message;
-      this.f = f;
-      this.gestureEnabled = gestureEnabled;
+      isShowMessage = true;
+      message = newMessage;
+      onMessageDismissed = onDismiss ?? hideMessage;
+      gestureEnabled = allowGestureDismiss;
     });
   }
 
+  void hideMessage() {
+    setState(() {
+      isShowMessage = false;
+      message = "";
+      onMessageDismissed = null;
+      gestureEnabled = false;
+    });
+  }
 }
