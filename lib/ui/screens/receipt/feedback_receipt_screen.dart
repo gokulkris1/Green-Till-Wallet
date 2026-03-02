@@ -288,15 +288,13 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                           }
                           changeLoadStatus();
                           debugPrint("ratingint" + _rating);
-
-                          bloc.userRepository
-                              .sendfeedback(
-                                  userid: widget.userid,
-                                  feedback: _feedbackcontroller.text.trim(),
-                                  rating: _rating,
-                                  receiptid: widget.receiptid)
-                              .then((value) {
-                            changeLoadStatus();
+                          try {
+                            final value = await bloc.userRepository
+                                .sendfeedback(
+                                    userid: widget.userid,
+                                    feedback: _feedbackcontroller.text.trim(),
+                                    rating: _rating,
+                                    receiptid: widget.receiptid);
                             print("sendfeedback");
                             print(value);
 
@@ -305,7 +303,7 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                               print(value);
                               print("sendfeedback successful");
                               showMessage(value.message ?? "", () {
-                                if (mounted)
+                                if (mounted) {
                                   setState(() {
                                     // bloc.add(WelcomeIn());
                                     isShowMessage = false;
@@ -313,21 +311,23 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                                         .popUntil(ModalRoute.withName("/"));
                                     bloc.add(HomeScreenEvent());
                                   });
+                                }
                               });
                             } else if (value.apiStatusCode == 401) {
                               showMessage(value.message ?? "", () {
-                                if (mounted)
+                                if (mounted) {
                                   setState(() {
                                     isShowMessage = false;
                                     logoutaccount();
                                     return bloc.add(Login());
                                   });
+                                }
                               });
                             } else {
                               print("sendfeedback failed ");
                               print(value.message);
                               showMessage(value.message ?? "", () {
-                                if (mounted)
+                                if (mounted) {
                                   setState(() {
                                     // bloc.add(WelcomeIn());
                                     isShowMessage = false;
@@ -335,15 +335,17 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                                         .popUntil(ModalRoute.withName("/"));
                                     bloc.add(HomeScreenEvent());
                                   });
+                                }
                               });
                             }
-                          }).whenComplete(() {
+                          } finally {
+                            changeLoadStatus();
                             if (mounted) {
                               setState(() {
                                 _isSubmittingFeedback = false;
                               });
                             }
-                          });
+                          }
                         }
                       }, width: deviceWidth * 0.8),
                       SizedBox(

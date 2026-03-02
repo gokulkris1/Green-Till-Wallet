@@ -4,56 +4,69 @@
 
 import 'dart:convert';
 
-GetReceiptListResponse getReceiptListResponseFromJson(String str) => GetReceiptListResponse.fromJson(json.decode(str));
+DateTime? _tryParseDateTime(dynamic raw) {
+  if (raw == null) {
+    return null;
+  }
+  final value = raw.toString().trim();
+  if (value.isEmpty || value.toLowerCase() == "null") {
+    return null;
+  }
+  return DateTime.tryParse(value);
+}
 
-String getReceiptListResponseToJson(GetReceiptListResponse data) => json.encode(data?.toJson());
+GetReceiptListResponse getReceiptListResponseFromJson(String str) =>
+    GetReceiptListResponse.fromJson(json.decode(str));
+
+String getReceiptListResponseToJson(GetReceiptListResponse data) =>
+    json.encode(data.toJson());
 
 class GetReceiptListResponse {
-  GetReceiptListResponse({
-    this.status,
-    this.data,
-    this.message,
-    this.apiStatusCode
-  });
+  GetReceiptListResponse(
+      {this.status, this.data, this.message, this.apiStatusCode});
 
   int? status;
   Data? data;
   String? message;
   int? apiStatusCode;
 
-  factory GetReceiptListResponse.fromJson(Map<String, dynamic> json) => GetReceiptListResponse(
-    status: json["status"],
-      data: Data.fromJson(json["data"]),
-    message: json["message"],
-      apiStatusCode: 200
-
-  );
+  factory GetReceiptListResponse.fromJson(Map<String, dynamic> json) =>
+      GetReceiptListResponse(
+        status: json["status"],
+        data: json["data"] is Map<String, dynamic>
+            ? Data.fromJson(json["data"])
+            : Data(receiptList: [], receiptCount: 0),
+        message: json["message"],
+        apiStatusCode: 200,
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": data?.toJson(),
-    "message": message,
-  };
+        "status": status,
+        "data": data?.toJson(),
+        "message": message,
+      };
 }
 
 class Data {
   Data({
-     this.receiptList,
-     this.receiptCount,
+    this.receiptList,
+    this.receiptCount,
   });
 
   List<Datum>? receiptList;
   int? receiptCount;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    receiptList: List<Datum>.from((json["receiptList"]?.map((x) => Datum.fromJson(x)) ?? [])),
-    receiptCount: json["receiptCount"] ?? 0,
-  );
+        receiptList: List<Datum>.from(
+            (json["receiptList"]?.map((x) => Datum.fromJson(x)) ?? [])),
+        receiptCount: json["receiptCount"] ?? 0,
+      );
 
   Map<String, dynamic> toJson() => {
-    "receiptList": List<dynamic>.from((receiptList?.map((x) => x?.toJson()) ?? [])),
-    "receiptCount": receiptCount,
-  };
+        "receiptList":
+            List<dynamic>.from((receiptList?.map((x) => x.toJson()) ?? [])),
+        "receiptCount": receiptCount,
+      };
 }
 
 class Datum {
@@ -101,57 +114,55 @@ class Datum {
   bool? latestReceipt;
   bool? duplicate;
 
-
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    receiptId: json["receiptId"],
-    storesId: json["storesId"],
-    generatedName: json["generatedName"] ?? "",
-    extension: json["extension"] ?? "",
-    fileType: json["fileType"] ?? "",
-    path: json["path"],
-    storeName: json["storeName"] ?? "",
-    storeLogo: json["storeLogo"] ?? "",
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    storeLocation: json["storeLocation"] ?? "",
-    purchaseDate: json["purchaseDate"] == null ? null : DateTime.parse(json["purchaseDate"]),
-    description: json["description"] ?? "",
-    currency: json["currency"] ?? "",
-    amount: json["amount"] ?? "",
-    inProgress: json["inProgress"] ?? false,
-    latestReceipt: json["latestReceipt"] ?? false,
-    tagType: json["tagType"] ?? "PERSONAL",
-    receiptFromType: json["receiptFromType"] ?? "",
-    warrantyCards: List<WarrantyCard>.from((json["warrantyCards"]?.map((x) => WarrantyCard.fromJson(x)) ?? [])),
-    duplicate: json["duplicate"] ?? false,
-
-  );
+        receiptId: json["receiptId"],
+        storesId: json["storesId"],
+        generatedName: json["generatedName"] ?? "",
+        extension: json["extension"] ?? "",
+        fileType: json["fileType"] ?? "",
+        path: json["path"],
+        storeName: json["storeName"] ?? "",
+        storeLogo: json["storeLogo"] ?? "",
+        updatedAt: _tryParseDateTime(json["updatedAt"]),
+        storeLocation: json["storeLocation"] ?? "",
+        purchaseDate: _tryParseDateTime(json["purchaseDate"]),
+        description: json["description"] ?? "",
+        currency: json["currency"] ?? "",
+        amount: json["amount"] ?? "",
+        inProgress: json["inProgress"] ?? false,
+        latestReceipt: json["latestReceipt"] ?? false,
+        tagType: json["tagType"] ?? "PERSONAL",
+        receiptFromType: json["receiptFromType"] ?? "",
+        warrantyCards: List<WarrantyCard>.from(
+            (json["warrantyCards"]?.map((x) => WarrantyCard.fromJson(x)) ??
+                [])),
+        duplicate: json["duplicate"] ?? false,
+      );
 
   Map<String, dynamic> toJson() => {
-    "receiptId": receiptId,
-    "storesId": storesId,
-    "generatedName": generatedName,
-    "extension": extension,
-    "fileType": fileType,
-    "path": path,
-    "storeName": storeName,
-    "storeLogo": storeLogo,
-    "updatedAt": updatedAt?.toIso8601String(),
-    "storeLocation": storeLocation,
-    "purchaseDate": purchaseDate?.toIso8601String(),
-    "description": description,
-    "currency": currency,
-    "amount": amount,
-    "inProgress": inProgress,
-    "latestReceipt": latestReceipt,
-    "tagType": tagType,
-    "receiptFromType": receiptFromType,
-    "warrantyCards": List<dynamic>.from((warrantyCards?.map((x) => x?.toJson()) ?? [])),
-    "duplicate": duplicate,
-
-  };
+        "receiptId": receiptId,
+        "storesId": storesId,
+        "generatedName": generatedName,
+        "extension": extension,
+        "fileType": fileType,
+        "path": path,
+        "storeName": storeName,
+        "storeLogo": storeLogo,
+        "updatedAt": updatedAt?.toIso8601String(),
+        "storeLocation": storeLocation,
+        "purchaseDate": purchaseDate?.toIso8601String(),
+        "description": description,
+        "currency": currency,
+        "amount": amount,
+        "inProgress": inProgress,
+        "latestReceipt": latestReceipt,
+        "tagType": tagType,
+        "receiptFromType": receiptFromType,
+        "warrantyCards":
+            List<dynamic>.from((warrantyCards?.map((x) => x.toJson()) ?? [])),
+        "duplicate": duplicate,
+      };
 }
-
-
 
 class WarrantyCard {
   WarrantyCard({
@@ -173,22 +184,22 @@ class WarrantyCard {
   String? path;
 
   factory WarrantyCard.fromJson(Map<String, dynamic> json) => WarrantyCard(
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    warrantyCardId: json["warrantyCardId"],
-    warrantyCardName: json["warrantyCardName"],
-    extension: json["extension"],
-    fileType: json["fileType"],
-    path: json["path"],
-  );
+        createdAt: _tryParseDateTime(json["createdAt"]),
+        updatedAt: _tryParseDateTime(json["updatedAt"]),
+        warrantyCardId: json["warrantyCardId"],
+        warrantyCardName: json["warrantyCardName"],
+        extension: json["extension"],
+        fileType: json["fileType"],
+        path: json["path"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "createdAt": createdAt?.toIso8601String(),
-    "updatedAt": updatedAt?.toIso8601String(),
-    "warrantyCardId": warrantyCardId,
-    "warrantyCardName": warrantyCardName,
-    "extension": extension,
-    "fileType": fileType,
-    "path": path,
-  };
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "warrantyCardId": warrantyCardId,
+        "warrantyCardName": warrantyCardName,
+        "extension": extension,
+        "fileType": fileType,
+        "path": path,
+      };
 }

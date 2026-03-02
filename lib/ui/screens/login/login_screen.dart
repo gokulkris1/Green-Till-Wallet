@@ -517,6 +517,7 @@ class _LoginScreenState extends BaseState<LoginScreen>
 
   @override
   Widget buildBody(BuildContext context) {
+    final bool isIos = !kIsWeb && Platform.isIOS;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: colorWhite,
@@ -646,11 +647,11 @@ class _LoginScreenState extends BaseState<LoginScreen>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if (Platform.isIOS)
+                                  if (isIos)
                                     SocialLoginButton(IC_APPLE, () {
                                       startAppleLogin(context);
                                     }),
-                                  if (Platform.isIOS)
+                                  if (isIos)
                                     const SizedBox(
                                       width: 15,
                                     ),

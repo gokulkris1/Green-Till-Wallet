@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 15:05:00 GMT
+Last updated: 2026-03-02 15:12:00 GMT
 
 ## Completed in this session
 
@@ -41,6 +41,17 @@ Last updated: 2026-03-02 15:05:00 GMT
     - `lib/repositories/UserRepository.dart`
   - Feedback submit now has in-flight guard to prevent duplicate submissions
     - `lib/ui/screens/receipt/feedback_receipt_screen.dart`
+- MVP stabilization pass #4 (receipt pipeline data safety):
+  - Hardened receipt list model parsing for null/invalid datetime payloads to avoid crashes during list/hydration flows
+    - `lib/models/responses/getreceiptlist_response.dart`
+  - Hardened OCR upload response parsing for string/int receipt IDs
+    - `lib/models/responses/uploadgalleryornative_response.dart`
+  - Receipt edit save now has in-flight guard to prevent duplicate updates
+    - `lib/ui/screens/receipt/edit_receipt_screen.dart`
+  - Feedback submit flow switched to awaited request with `try/finally` so loader and submit state always reset
+    - `lib/ui/screens/receipt/feedback_receipt_screen.dart`
+  - Login social button rendering now avoids `Platform.isIOS` checks on web runtime
+    - `lib/ui/screens/login/login_screen.dart`
 
 ## Build output
 

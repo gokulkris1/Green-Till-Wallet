@@ -79,6 +79,7 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
   bool isLoadingLocal = true;
   bool isHydratingReceipt = false;
   bool didStartHydration = false;
+  bool _isSaving = false;
   String receiptImageUrl = "";
   List<String> _facilityAttended = ["PERSONAL", "BUSINESS"];
   String? _selectfacilityAttended;
@@ -1006,7 +1007,10 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                           SizedBox(
                             height: deviceHeight * 0.025,
                           ),
-                          getButton(Save, () async {
+                          getButton(_isSaving ? "Saving..." : Save, () async {
+                            if (_isSaving) {
+                              return;
+                            }
                             print("fileslength" + allFiles.length.toString());
                             await convertToFile();
                             print("allFiles");
@@ -1017,6 +1021,11 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                                 false) {
                               print("selectedstoreidbtn");
                               print(selectedStoreId);
+                              if (mounted) {
+                                setState(() {
+                                  _isSaving = true;
+                                });
+                              }
                               changeLoadStatus();
                               await getAllFiles();
                               final amountForApi = _normalizedAmountForApi();
@@ -1038,7 +1047,6 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                                       tagType: _selectfacilityAttended ?? "",
                                       storesId: selectedStoreId ?? 0)
                                   .then((value) {
-                                changeLoadStatus();
                                 if (value.status == 1) {
                                   print("edit receipt successful");
                                   showMessage(value.message ?? "", () {
@@ -1068,6 +1076,13 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                                       isShowMessage = false;
                                       Navigator.pop(context);
                                     });
+                                  });
+                                }
+                              }).whenComplete(() {
+                                changeLoadStatus();
+                                if (mounted) {
+                                  setState(() {
+                                    _isSaving = false;
                                   });
                                 }
                               });
