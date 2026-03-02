@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -1854,17 +1854,15 @@ class _ReceiptScreenState extends BaseState<ReceiptScreen> with BasicScreen {
   }
 
   Future<bool> checkPermission() async {
-    if (Permission.storage.status == PermissionStatus.granted) {
-      if (Permission.notification.status == PermissionStatus.granted) {
-        return true;
-      } else {
-        await Permission.notification.request();
-        return true;
-      }
-    } else {
+    final storageStatus = await Permission.storage.status;
+    if (storageStatus != PermissionStatus.granted) {
       await Permission.storage.request();
-      return true;
     }
+    final notificationStatus = await Permission.notification.status;
+    if (notificationStatus != PermissionStatus.granted) {
+      await Permission.notification.request();
+    }
+    return true;
   }
 
   Future getPath(String name, String url) async {
@@ -2794,22 +2792,34 @@ class _ReceiptScreenState extends BaseState<ReceiptScreen> with BasicScreen {
     }
   }
 
-  _getFromGallery() async {
-    bool isGalleryGranted = await Permission.photos.request().isLimited;
-    if (!isGalleryGranted) {
-      isGalleryGranted =
-          await Permission.photos.request() == PermissionStatus.granted;
+  Future<bool> _requestGalleryPermission() async {
+    if (kIsWeb) {
+      return true;
     }
+    if (Platform.isIOS) {
+      final status = await Permission.photos.request();
+      return status == PermissionStatus.granted ||
+          status == PermissionStatus.limited;
+    }
+    final photosStatus = await Permission.photos.request();
+    if (photosStatus == PermissionStatus.granted ||
+        photosStatus == PermissionStatus.limited) {
+      return true;
+    }
+    final storageStatus = await Permission.storage.request();
+    return storageStatus == PermissionStatus.granted;
+  }
+
+  _getFromGallery() async {
+    final isGalleryGranted = await _requestGalleryPermission();
 
     if (!isGalleryGranted) {
       debugPrint("no permission given gallery");
-      debugPrint("issue with selected photos");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content:
-                Text('Please give permission to access photos in settings')),
+            content: Text(
+                'Please allow gallery access from app settings to upload receipts')),
       );
-      // Have not permission to camera
       return;
     }
 

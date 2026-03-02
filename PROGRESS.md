@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 13:07:00 GMT
+Last updated: 2026-03-02 14:43:00 GMT
 
 ## Completed in this session
 
@@ -14,6 +14,15 @@ Last updated: 2026-03-02 13:07:00 GMT
   - `pubspec.yaml` (`pdf`, `archive`)
 - Android build config updated for store plugin compatibility
   - `android/app/build.gradle` (`compileSdkVersion` + `targetSdkVersion` = 36)
+- MVP stabilization pass (receipts + login reliability):
+  - Email/password sign-in no longer blocks when FCM token fetch fails (login proceeds with empty token fallback)
+    - `lib/ui/screens/login/login_screen.dart`
+  - Receipt upload submit is now guarded against double-taps and includes one automatic retry for transient network failures
+    - `lib/ui/screens/qrloadedreceipt/upload_gallery_image.dart`
+  - Gallery permission request flow improved for iOS/Android variants (photos first, storage fallback)
+    - `lib/ui/screens/receipt/receipt_screen.dart`
+  - OCR hydration wait window for just-uploaded receipts extended (4 -> 8 polls)
+    - `lib/ui/screens/receipt/edit_receipt_screen.dart`
 
 ## Build output
 

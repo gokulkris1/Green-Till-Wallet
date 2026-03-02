@@ -16,6 +16,7 @@ import 'package:greentill/utils/shared_pref_helper.dart';
 import 'package:greentill/utils/strings.dart';
 import 'package:greentill/utils/validations.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart' as apple_sign_in;
+
 class LoginScreen extends BaseStatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -47,12 +48,11 @@ class _LoginScreenState extends BaseState<LoginScreen>
       return;
     }
     debugPrint("clickonapple");
-    var authData ;
+    var authData;
     try {
       if (!await apple_sign_in.TheAppleSignIn.isAvailable()) {
         debugPrint("Apple sign in not available");
-        showMessage(
-             'Unable to login', (){
+        showMessage('Unable to login', () {
           setState(() {
             isShowMessage = false;
           });
@@ -63,8 +63,12 @@ class _LoginScreenState extends BaseState<LoginScreen>
         // showErrorAlert(context: context, message: "Apple sign in unavailable");
         return; //Break from the program
       }
-      final apple_sign_in.AuthorizationResult result = await apple_sign_in.TheAppleSignIn.performRequests([
-        apple_sign_in.AppleIdRequest(requestedScopes: [apple_sign_in.Scope.email, apple_sign_in.Scope.fullName])
+      final apple_sign_in.AuthorizationResult result =
+          await apple_sign_in.TheAppleSignIn.performRequests([
+        apple_sign_in.AppleIdRequest(requestedScopes: [
+          apple_sign_in.Scope.email,
+          apple_sign_in.Scope.fullName
+        ])
       ]);
       debugPrint("applepopupopenup");
       if (result.status == apple_sign_in.AuthorizationStatus.cancelled) {
@@ -101,72 +105,40 @@ class _LoginScreenState extends BaseState<LoginScreen>
           authData = authResult;
         });
 
-            if(authData != null){
+        if (authData != null) {
+          if (SharedPrefHelper.instance
+              .getString(SharedPrefHelper.FIREBASE_TOKEN)
+              .isEmpty) {
+            if (kIsWeb) {
+              SharedPrefHelper.instance
+                  .putString(SharedPrefHelper.FIREBASE_TOKEN, "");
+              return;
+            }
+            FirebaseMessaging.instance.getToken().then((value) async {
+              SharedPrefHelper.instance
+                  .putString(SharedPrefHelper.FIREBASE_TOKEN, value ?? "");
               if (SharedPrefHelper.instance
-                      .getString(SharedPrefHelper.FIREBASE_TOKEN)
-                      .isEmpty){
-                if (kIsWeb) {
-                  SharedPrefHelper.instance
-                      .putString(SharedPrefHelper.FIREBASE_TOKEN, "");
-                  return;
-                }
-                FirebaseMessaging.instance.getToken().then((value) async{
-                  SharedPrefHelper.instance
-                      .putString(SharedPrefHelper.FIREBASE_TOKEN, value ?? "");
-                  if (SharedPrefHelper.instance
-                          .getString(SharedPrefHelper.FIREBASE_TOKEN)
-                          .isEmpty) {
-                    await showMessage(
-                        "Login failed please try again later",() {
-                      setState(() {
-                        isShowMessage = false;
-                      });
-                    });
-                  }else{
-
-                    changeLoadStatus();
-                    bloc.userRepository.login(
+                  .getString(SharedPrefHelper.FIREBASE_TOKEN)
+                  .isEmpty) {
+                await showMessage("Login failed please try again later", () {
+                  setState(() {
+                    isShowMessage = false;
+                  });
+                });
+              } else {
+                changeLoadStatus();
+                bloc.userRepository
+                    .login(
                         email: authResult.user?.email ?? "",
                         fcmtoken: SharedPrefHelper.instance
-                            .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-                        devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
+                                .getString(SharedPrefHelper.FIREBASE_TOKEN) ??
+                            "",
+                        devicetype: kIsWeb
+                            ? "web"
+                            : (Platform.isIOS ? "ios" : "android"),
                         registertype: "Apple",
                         socialMediaId: authResult.user?.uid ?? "",
-                        firstname: authResult.user?.displayName ?? ""
-                    )
-                        .then((value) {
-                      changeLoadStatus();
-                      if (value.status == 1) {
-                        print("user logged in");
-                        // showMessage(value.message ?? "", () {
-                        // setState(() {
-                        // isShowMessage = false;
-                        bloc.add(HomeScreenEvent());
-                        // });
-                        // });
-
-                      } else {
-                        print(value.message);
-                        showMessage(value.message ?? "", () {
-                          setState(() {
-                            isShowMessage = false;
-                          });
-                        });
-                      }
-                    });
-                  }
-                });
-              }else{
-                changeLoadStatus();
-                bloc.userRepository.login(
-                    email: authResult.user?.email ?? "",
-                    fcmtoken: SharedPrefHelper.instance
-                        .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-                    devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
-                    registertype: "Apple",
-                    socialMediaId: authResult.user?.uid ?? "",
-                    firstname: authResult.user?.displayName ?? ""
-                )
+                        firstname: authResult.user?.displayName ?? "")
                     .then((value) {
                   changeLoadStatus();
                   if (value.status == 1) {
@@ -177,7 +149,6 @@ class _LoginScreenState extends BaseState<LoginScreen>
                     bloc.add(HomeScreenEvent());
                     // });
                     // });
-
                   } else {
                     print(value.message);
                     showMessage(value.message ?? "", () {
@@ -188,46 +159,75 @@ class _LoginScreenState extends BaseState<LoginScreen>
                   }
                 });
               }
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-
-            }else{
-              print("logindata null");
-              showMessage(
-                  'Unable to login auth data null', (){
-                setState(() {
-                  isShowMessage = false;
+            });
+          } else {
+            changeLoadStatus();
+            bloc.userRepository
+                .login(
+                    email: authResult.user?.email ?? "",
+                    fcmtoken: SharedPrefHelper.instance
+                            .getString(SharedPrefHelper.FIREBASE_TOKEN) ??
+                        "",
+                    devicetype:
+                        kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
+                    registertype: "Apple",
+                    socialMediaId: authResult.user?.uid ?? "",
+                    firstname: authResult.user?.displayName ?? "")
+                .then((value) {
+              changeLoadStatus();
+              if (value.status == 1) {
+                print("user logged in");
+                // showMessage(value.message ?? "", () {
+                // setState(() {
+                // isShowMessage = false;
+                bloc.add(HomeScreenEvent());
+                // });
+                // });
+              } else {
+                print(value.message);
+                showMessage(value.message ?? "", () {
+                  setState(() {
+                    isShowMessage = false;
+                  });
                 });
-              });
-            }
-            // if (await userExists(authData.user.email)) {
-            //   _saveUserDataToSharedPreferences();
-            //   SharedPreferencesMethods.saveUserLoggedInSharedPreference(true);
-            //   Navigator.pushReplacement(context,
-            //       MaterialPageRoute(builder: (context) => SelectInterestsPage(0)));
-            //   // _loginWithApple();
-            // } else {
-            //   Navigator.of(context)
-            //       .push(MaterialPageRoute(
-            //       builder: (context) => SetUpAccountWithApple(
-            //         uid: authData.user.uid,
-            //         appleEmailId: authData.user.email,
-            //       )))
-            //       .then((value) {
-            //     setState(() {
-            //       _isLoadingApple = false;
-            //     });
-            //   });
-            // }
+              }
+            });
+          }
+          // Navigator.pushReplacement(
+          //     context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+
+          // Navigator.pushReplacement(
+          //     context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+        } else {
+          print("logindata null");
+          showMessage('Unable to login auth data null', () {
+            setState(() {
+              isShowMessage = false;
+            });
+          });
+        }
+        // if (await userExists(authData.user.email)) {
+        //   _saveUserDataToSharedPreferences();
+        //   SharedPreferencesMethods.saveUserLoggedInSharedPreference(true);
+        //   Navigator.pushReplacement(context,
+        //       MaterialPageRoute(builder: (context) => SelectInterestsPage(0)));
+        //   // _loginWithApple();
+        // } else {
+        //   Navigator.of(context)
+        //       .push(MaterialPageRoute(
+        //       builder: (context) => SetUpAccountWithApple(
+        //         uid: authData.user.uid,
+        //         appleEmailId: authData.user.email,
+        //       )))
+        //       .then((value) {
+        //     setState(() {
+        //       _isLoadingApple = false;
+        //     });
+        //   });
+        // }
       });
-
-
     } catch (error) {
-      showMessage(
-          'Unable to login' + error.toString(), (){
+      showMessage('Unable to login' + error.toString(), () {
         setState(() {
           isShowMessage = false;
         });
@@ -295,7 +295,6 @@ class _LoginScreenState extends BaseState<LoginScreen>
   //   print(session);
   // }
 
-
   Future<void> signup(BuildContext context) async {
     if (kIsWeb) {
       showMessage("Google sign-in isn't available on web preview.", () {
@@ -334,39 +333,39 @@ class _LoginScreenState extends BaseState<LoginScreen>
     // print("userdetails"+user.email);
     // print("userdetails"+user.displayName);
     if (SharedPrefHelper.instance
-            .getString(SharedPrefHelper.FIREBASE_TOKEN)
-            .isEmpty){
+        .getString(SharedPrefHelper.FIREBASE_TOKEN)
+        .isEmpty) {
       if (kIsWeb) {
         SharedPrefHelper.instance
             .putString(SharedPrefHelper.FIREBASE_TOKEN, "");
         return;
       }
-      FirebaseMessaging.instance.getToken().then((value) async{
+      FirebaseMessaging.instance.getToken().then((value) async {
         SharedPrefHelper.instance
             .putString(SharedPrefHelper.FIREBASE_TOKEN, value ?? "");
         if (SharedPrefHelper.instance
-                .getString(SharedPrefHelper.FIREBASE_TOKEN)
-                .isEmpty) {
-          await showMessage(
-              "Login failed please try again later",() {
+            .getString(SharedPrefHelper.FIREBASE_TOKEN)
+            .isEmpty) {
+          await showMessage("Login failed please try again later", () {
             setState(() {
               isShowMessage = false;
             });
           });
-        }else{
-
+        } else {
           changeLoadStatus();
           print("udid:");
           print(user.uid);
-          bloc.userRepository.login(
-              email: user.email ?? "",
-              fcmtoken: SharedPrefHelper.instance
-                  .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-              devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
-              registertype: "Google",
-            socialMediaId: user.uid,
-              firstname: user.displayName ?? ""
-          )
+          bloc.userRepository
+              .login(
+                  email: user.email ?? "",
+                  fcmtoken: SharedPrefHelper.instance
+                          .getString(SharedPrefHelper.FIREBASE_TOKEN) ??
+                      "",
+                  devicetype:
+                      kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
+                  registertype: "Google",
+                  socialMediaId: user.uid,
+                  firstname: user.displayName ?? "")
               .then((value) {
             changeLoadStatus();
             if (value.status == 1) {
@@ -378,7 +377,6 @@ class _LoginScreenState extends BaseState<LoginScreen>
               bloc.add(HomeScreenEvent());
               // });
               // });
-
             } else {
               print(value.message);
               showMessage(value.message ?? "", () async {
@@ -392,20 +390,20 @@ class _LoginScreenState extends BaseState<LoginScreen>
           });
         }
       });
-    }else{
+    } else {
       print("udid:");
       print(user.uid);
       changeLoadStatus();
-      bloc.userRepository.login(
-          email: user.email ?? "",
-          fcmtoken: SharedPrefHelper.instance
-              .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-          devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
-          registertype: "Google",
-        socialMediaId: user.uid,
-        firstname: user.displayName ?? ""
-
-      )
+      bloc.userRepository
+          .login(
+              email: user.email ?? "",
+              fcmtoken: SharedPrefHelper.instance
+                      .getString(SharedPrefHelper.FIREBASE_TOKEN) ??
+                  "",
+              devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
+              registertype: "Google",
+              socialMediaId: user.uid,
+              firstname: user.displayName ?? "")
           .then((value) {
         changeLoadStatus();
         if (value.status == 1) {
@@ -418,7 +416,6 @@ class _LoginScreenState extends BaseState<LoginScreen>
           bloc.add(HomeScreenEvent());
           // });
           // });
-
         } else {
           print(value.message);
           showMessage(value.message ?? "", () async {
@@ -432,9 +429,61 @@ class _LoginScreenState extends BaseState<LoginScreen>
     }
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => SignUpScreen()));
-  // if result not null we simply call the MaterialpageRoute,
+    // if result not null we simply call the MaterialpageRoute,
     // for go to the HomePage screen
+  }
+
+  String _deviceType() {
+    if (kIsWeb) {
+      return "web";
     }
+    return Platform.isIOS ? "ios" : "android";
+  }
+
+  Future<String> _resolveFcmToken() async {
+    String token =
+        SharedPrefHelper.instance.getString(SharedPrefHelper.FIREBASE_TOKEN);
+    if (token.isNotEmpty || kIsWeb) {
+      return token;
+    }
+    try {
+      token = await FirebaseMessaging.instance.getToken() ?? "";
+    } catch (_) {
+      token = "";
+    }
+    SharedPrefHelper.instance.putString(SharedPrefHelper.FIREBASE_TOKEN, token);
+    return token;
+  }
+
+  Future<void> _handleEmailSignIn() async {
+    final fcmToken = await _resolveFcmToken();
+    changeLoadStatus();
+    try {
+      final value = await bloc.userRepository.login(
+        email: _email.text.trim(),
+        password: _password.text.trim(),
+        fcmtoken: fcmToken,
+        devicetype: _deviceType(),
+        registertype: "Normal",
+      );
+      if (!mounted) {
+        return;
+      }
+      if (value.status == 1) {
+        bloc.add(HomeScreenEvent());
+      } else {
+        showMessage(value.message ?? "", () {
+          if (mounted) {
+            setState(() {
+              isShowMessage = false;
+            });
+          }
+        });
+      }
+    } finally {
+      changeLoadStatus();
+    }
+  }
 
   void _toggle() {
     setState(() {
@@ -467,7 +516,8 @@ class _LoginScreenState extends BaseState<LoginScreen>
                 width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: HORIZONTAL_PADDING, vertical: VERTICAL_PADDING),
+                      horizontal: HORIZONTAL_PADDING,
+                      vertical: VERTICAL_PADDING),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -559,95 +609,7 @@ class _LoginScreenState extends BaseState<LoginScreen>
                             getButton(Signin, () {
                               if (formGlobalKey.currentState?.validate() ??
                                   false) {
-                                if (SharedPrefHelper.instance
-                                        .getString(SharedPrefHelper.FIREBASE_TOKEN)
-                                        .isEmpty){
-                                  if (kIsWeb) {
-                                    SharedPrefHelper.instance
-                                        .putString(
-                                            SharedPrefHelper.FIREBASE_TOKEN,
-                                            "");
-                                    return;
-                                  }
-                                  FirebaseMessaging.instance.getToken().then((value) async{
-                                    SharedPrefHelper.instance
-                                        .putString(SharedPrefHelper.FIREBASE_TOKEN, value ?? "");
-                                    if (SharedPrefHelper.instance
-                                            .getString(SharedPrefHelper.FIREBASE_TOKEN)
-                                            .isEmpty) {
-                                      await showMessage(
-                                          "Login failed please try again later",() {
-                                        setState(() {
-                                          isShowMessage = false;
-                                        });
-                                      });
-                                  }else{
-
-                                      changeLoadStatus();
-                                      bloc.userRepository.login(
-                                        email: _email.text.trim(),
-                                        password: _password.text.trim(),
-                                        fcmtoken: SharedPrefHelper.instance
-                                            .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-                                        devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
-                                        registertype: "Normal"
-                                          )
-                                          .then((value) {
-                                        changeLoadStatus();
-                                        if (value.status == 1) {
-                                          print("user logged in");
-                                          // showMessage(value.message ?? "", () {
-                                          // setState(() {
-                                          // isShowMessage = false;
-                                          bloc.add(HomeScreenEvent());
-                                          // });
-                                          // });
-
-                                        } else {
-                                          print("comes here");
-                                          print(value.message);
-                                          showMessage(value.message ?? "", () {
-                                            setState(() {
-                                              isShowMessage = false;
-                                            });
-                                          });
-                                        }
-                                      });
-                                    }
-                                  });
-                                }else{
-                                  changeLoadStatus();
-                                  bloc.userRepository.login(
-                                      email: _email.text.trim(),
-                                      password: _password.text.trim(),
-                                      fcmtoken: SharedPrefHelper.instance
-                                          .getString(SharedPrefHelper.FIREBASE_TOKEN) ?? "",
-                                      devicetype: kIsWeb ? "web" : (Platform.isIOS ? "ios" : "android"),
-                                      registertype: "Normal"
-                                  )
-                                      .then((value) {
-                                    changeLoadStatus();
-                                    if (value.status == 1) {
-                                      print("user logged in");
-                                      // showMessage(value.message ?? "", () {
-                                      // setState(() {
-                                      // isShowMessage = false;
-                                      bloc.add(HomeScreenEvent());
-                                      // });
-                                      // });
-
-                                    } else {
-                                      print("comes here2");
-                                      print(value.message);
-                                      showMessage(value.message ?? "", () {
-                                        setState(() {
-                                          isShowMessage = false;
-                                        });
-                                      });
-                                    }
-                                  });
-                                }
-
+                                _handleEmailSignIn();
                               }
                             },
                                 width: deviceWidth * 0.8,
@@ -669,15 +631,16 @@ class _LoginScreenState extends BaseState<LoginScreen>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if(Platform.isIOS)
-                                  SocialLoginButton(IC_APPLE,(){
-                                    startAppleLogin(context);
-                                  }),
-                                  if(Platform.isIOS) const SizedBox(
-                                    width: 15,
-                                  ),
-                                  SocialLoginButton(IC_GOOGLE,(){
-                                     signup(context);
+                                  if (Platform.isIOS)
+                                    SocialLoginButton(IC_APPLE, () {
+                                      startAppleLogin(context);
+                                    }),
+                                  if (Platform.isIOS)
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                  SocialLoginButton(IC_GOOGLE, () {
+                                    signup(context);
                                   })
                                 ],
                               ),
@@ -688,7 +651,8 @@ class _LoginScreenState extends BaseState<LoginScreen>
                         Container(
                           margin: EdgeInsets.only(bottom: deviceHeight * 0.002),
                           child: Padding(
-                            padding: EdgeInsets.only(bottom: deviceHeight * 0.06),
+                            padding:
+                                EdgeInsets.only(bottom: deviceHeight * 0.06),
                             child: SizedBox(
                               width: deviceWidth * 0.8,
                               child: Row(

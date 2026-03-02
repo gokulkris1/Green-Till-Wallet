@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -1160,7 +1159,7 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
     setState(() {
       isHydratingReceipt = true;
     });
-    const maxAttempts = 4;
+    const maxAttempts = 8;
     for (var attempt = 0; attempt < maxAttempts; attempt++) {
       final response = await bloc.userRepository.getreceiptList(
         int.tryParse(userid) ?? 0,

@@ -27,6 +27,7 @@ class UploadGalleryImage extends BaseStatefulWidget {
 class _UploadGalleryImageState extends BaseState<UploadGalleryImage>
     with BasicScreen {
   bool loaded = false;
+  bool _isUploading = false;
   String userid = prefs.getString(SharedPrefHelper.USER_ID) ?? "0";
   String _selectedReceiptType = "BUSINESS";
 
@@ -40,6 +41,110 @@ class _UploadGalleryImageState extends BaseState<UploadGalleryImage>
       tagType: _selectedReceiptType,
       timeZone: DateTime.now().timeZoneName.toString(),
     );
+  }
+
+  bool _isTransientUploadFailure(String? message) {
+    final text = (message ?? "").toLowerCase();
+    return text.contains("time out") ||
+        text.contains("timeout") ||
+        text.contains("socket") ||
+        text.contains("internet");
+  }
+
+  Future<void> _submitUpload() async {
+    if (_isUploading) {
+      return;
+    }
+    File? imageFile = widget.imageFile;
+    if (imageFile != null) {
+      imageFile = await convertHEIC2PNG(imageFile.path);
+    }
+    if (imageFile == null) {
+      showMessage("Could not read receipt image. Please try again.", () {
+        if (mounted) {
+          setState(() {
+            isShowMessage = false;
+          });
+        }
+      });
+      return;
+    }
+
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _isUploading = true;
+    });
+
+    changeLoadStatus();
+    try {
+      var value = await bloc.userRepository.uploadgalleryornative(
+        userid: int.parse(userid),
+        profilePhoto: imageFile,
+        receipttype: widget.receiptType ?? "GALLERY",
+      );
+      if (value.status != 1 && _isTransientUploadFailure(value.message)) {
+        value = await bloc.userRepository.uploadgalleryornative(
+          userid: int.parse(userid),
+          profilePhoto: imageFile,
+          receipttype: widget.receiptType ?? "GALLERY",
+        );
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      if (value.status == 1) {
+        await _updateReceiptTagType(value.data ?? 0);
+        if (!mounted) {
+          return;
+        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return FeedbackReceiptScreen(
+            userid: int.parse(userid),
+            receiptid: value.data ?? 0,
+            message: value.message ?? "",
+            imagefrom: "INAPP",
+            initialTagType: _selectedReceiptType,
+          );
+        }));
+      } else if (value.apiStatusCode == 401) {
+        showMessage(value.message ?? "", () {
+          if (mounted) {
+            setState(() {
+              isShowMessage = false;
+              logoutaccount();
+              bloc.add(Login());
+            });
+          }
+        });
+      } else if (value.apiStatusCode == 500) {
+        showMessage("Upload receipt failed", () {
+          if (mounted) {
+            setState(() {
+              isShowMessage = false;
+            });
+          }
+        });
+      } else {
+        showMessage(value.message ?? "Upload receipt failed", () {
+          if (mounted) {
+            setState(() {
+              isShowMessage = false;
+            });
+          }
+        });
+      }
+    } finally {
+      changeLoadStatus();
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -102,65 +207,21 @@ class _UploadGalleryImageState extends BaseState<UploadGalleryImage>
                 ),
                 Spacer(),
                 IconButton(
-                  onPressed: () async {
-                    File? imageFile = widget.imageFile;
-                    if (imageFile != null) {
-                      imageFile = await convertHEIC2PNG(imageFile.path);
-                    }
-                    print("userid=" + userid.toString());
-                    changeLoadStatus();
-                    final value = await bloc.userRepository
-                        .uploadgalleryornative(
-                            userid: int.parse(userid),
-                            profilePhoto: imageFile,
-                            receipttype: widget.receiptType ?? "GALLERY");
-                    changeLoadStatus();
-                    if (value.status == 1) {
-                      print("upload receipt successful from gallery or native");
-                      await _updateReceiptTagType(value.data ?? 0);
-                      if (!mounted) {
-                        return;
-                      }
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return FeedbackReceiptScreen(
-                          userid: int.parse(userid),
-                          receiptid: value.data ?? 0,
-                          message: value.message ?? "",
-                          imagefrom: "INAPP",
-                          initialTagType: _selectedReceiptType,
-                        );
-                      }));
-                    } else if (value.apiStatusCode == 401) {
-                      showMessage(value.message ?? "", () {
-                        setState(() {
-                          isShowMessage = false;
-                          logoutaccount();
-                          return bloc.add(Login());
-                        });
-                      });
-                    } else if (value.apiStatusCode == 500) {
-                      showMessage("Upload receipt failed", () {
-                        setState(() {
-                          isShowMessage = false;
-                        });
-                      });
-                    } else {
-                      print("upload receipt failed ");
-                      print(value.message);
-                      showMessage(value.message ?? "", () {
-                        setState(() {
-                          // bloc.add(WelcomeIn());
-                          isShowMessage = false;
-                        });
-                      });
-                    }
-                  },
-                  icon: Icon(
-                    Icons.task_alt,
-                    color: Colors.green,
-                    size: 24,
-                  ),
+                  onPressed: _isUploading ? null : _submitUpload,
+                  icon: _isUploading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: gpGreen,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.task_alt,
+                          color: Colors.green,
+                          size: 24,
+                        ),
                 )
               ],
             ),
