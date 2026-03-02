@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 15:42:00 GMT
+Last updated: 2026-03-02 18:18:00 GMT
 
 ## Completed in this session
 
@@ -71,6 +71,13 @@ Last updated: 2026-03-02 15:42:00 GMT
   - Repository base URL now reads from config (`GT_API_BASE_URL`) instead of hardcoded source edits
     - `lib/repositories/UserRepository.dart`
   - This allows separate staging/prod builds without code changes
+- API/backend handoff integration pass:
+  - Added repeatable Android build script with backend env wiring (`GT_ENV`, `GT_API_BASE_URL`, `GT_API_BASE_HOST`)
+    - `tools/build_android.sh`
+  - Added API reachability check script for quick endpoint validation
+    - `tools/check_api_health.sh`
+  - Verified `greentill-api.apps.openxcell.dev` is reachable from this machine
+  - Verified `api.greentill.co` is currently not DNS-resolvable (NXDOMAIN), so production domain/DNS needs fix before go-live
 
 ## Build output
 
