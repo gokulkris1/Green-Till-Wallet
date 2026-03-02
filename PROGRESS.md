@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 15:30:00 GMT
+Last updated: 2026-03-02 15:42:00 GMT
 
 ## Completed in this session
 
@@ -65,6 +65,12 @@ Last updated: 2026-03-02 15:30:00 GMT
     - `lib/ui/screens/homepage/home_screen.dart`
   - Side menu now includes direct **Capture Receipt** entry point
     - `lib/ui/screens/sidemenu/side_menu.dart`
+- Production API wiring pass:
+  - Added runtime environment config with `--dart-define` support for API endpoints
+    - `lib/config/app_config.dart`
+  - Repository base URL now reads from config (`GT_API_BASE_URL`) instead of hardcoded source edits
+    - `lib/repositories/UserRepository.dart`
+  - This allows separate staging/prod builds without code changes
 
 ## Build output
 

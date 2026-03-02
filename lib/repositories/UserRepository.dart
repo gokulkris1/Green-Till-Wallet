@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:greentill/config/app_config.dart';
 import 'package:greentill/models/responses/add_storecard_response.dart';
 import 'package:greentill/models/responses/all_notification_delete_response.dart';
 import 'package:greentill/models/responses/change_password_response.dart';
@@ -51,17 +52,8 @@ import '../models/responses/redeem_stamp_voucher_response.dart';
 class UserRepository {
   SharedPrefHelper prefs = SharedPrefHelper.instance;
 
-  //dev
-  String baseUrl = "https://greentill-api.apps.openxcell.dev";
-  String baseUrlHttps = "greentill-api.apps.openxcell.dev";
-
-  // local
-  //  String baseUrl = "https://d451-2401-4900-1f3f-8d8a-8c8c-fc33-839b-a0d7.ngrok-free.app";
-  //  String baseUrlHttps = "192.168.2.153:8451";
-
-  // Live
-  //  String baseUrl = "https://api.greentill.co";
-  //  String baseUrlHttps = "api.greentill.co";
+  final String baseUrl = AppConfig.apiBaseUrl;
+  final String baseUrlHttps = AppConfig.apiBaseHost;
 
   UserRepository();
 
