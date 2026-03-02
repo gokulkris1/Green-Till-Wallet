@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 08:56:02 GMT
+Last updated: 2026-03-02 09:28:00 GMT
 
 ## Completed in this session
 
@@ -18,3 +18,11 @@ Last updated: 2026-03-02 08:56:02 GMT
 
 - Android debug APK built successfully:
   - `build/app/outputs/flutter-apk/app-debug.apk`
+
+## Current test blocker
+
+- Signup / forgot-password can fail with backend SMTP auth error (`javax.mail.AuthenticationFailedException 535`).
+- App-side fix added: raw backend exception is now normalized to a clean user-facing message.
+- Practical testing workaround:
+  - Main app APK: `/Users/gurijala/Desktop/GreenTill-latest-debug.apk`
+  - UI preview APK (no backend auth dependency): `/Users/gurijala/Desktop/GreenTill-preview-debug.apk`
