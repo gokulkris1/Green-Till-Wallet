@@ -97,14 +97,28 @@ class _UploadGalleryImageState extends BaseState<UploadGalleryImage>
       }
 
       if (value.status == 1) {
-        await _updateReceiptTagType(value.data ?? 0);
+        final receiptId = value.data ?? 0;
+        if (receiptId <= 0) {
+          showMessage(
+              "Receipt upload completed but ID was missing. Please refresh receipts list.",
+              () {
+            if (mounted) {
+              setState(() {
+                isShowMessage = false;
+                bloc.add(ReceiptEvent());
+              });
+            }
+          });
+          return;
+        }
+        await _updateReceiptTagType(receiptId);
         if (!mounted) {
           return;
         }
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return FeedbackReceiptScreen(
             userid: int.parse(userid),
-            receiptid: value.data ?? 0,
+            receiptid: receiptId,
             message: value.message ?? "",
             imagefrom: "INAPP",
             initialTagType: _selectedReceiptType,

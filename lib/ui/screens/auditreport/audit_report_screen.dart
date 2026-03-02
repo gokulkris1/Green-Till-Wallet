@@ -553,18 +553,37 @@ class _AuditReportScreenState extends BaseState<AuditReportScreen>
     final monthLabel =
         DateFormat("yyyy-MM").format(DateTime(selectedYear, selectedMonth, 1));
     final filtered = _filteredReceipts;
+    if (filtered.isEmpty) {
+      showMessage("No receipts found for $monthLabel", () {
+        if (mounted) {
+          setState(() {
+            isShowMessage = false;
+          });
+        }
+      });
+      return;
+    }
     final lines = _buildCsvLines(filtered, monthLabel);
+    try {
+      final fileName = "greentill-expense-report-$monthLabel.csv";
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File("${dir.path}/$fileName");
+      await file.writeAsString(lines.join("\n"));
 
-    final fileName = "greentill-expense-report-$monthLabel.csv";
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File("${dir.path}/$fileName");
-    await file.writeAsString(lines.join("\n"));
-
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: "Green Till expense report ($monthLabel)",
-      subject: "Expense report ($monthLabel)",
-    );
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: "Green Till expense report ($monthLabel)",
+        subject: "Expense report ($monthLabel)",
+      );
+    } catch (e) {
+      showMessage("Unable to generate CSV export: $e", () {
+        if (mounted) {
+          setState(() {
+            isShowMessage = false;
+          });
+        }
+      });
+    }
   }
 
   Future<void> _generateArchiveManifest() async {

@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 14:43:00 GMT
+Last updated: 2026-03-02 14:53:00 GMT
 
 ## Completed in this session
 
@@ -23,6 +23,15 @@ Last updated: 2026-03-02 14:43:00 GMT
     - `lib/ui/screens/receipt/receipt_screen.dart`
   - OCR hydration wait window for just-uploaded receipts extended (4 -> 8 polls)
     - `lib/ui/screens/receipt/edit_receipt_screen.dart`
+- MVP stabilization pass #2 (end-to-end reliability):
+  - Added sign-in in-flight guard to prevent duplicate login submissions
+    - `lib/ui/screens/login/login_screen.dart`
+  - Added receipt-upload success validation (handles missing receipt id safely)
+    - `lib/ui/screens/qrloadedreceipt/upload_gallery_image.dart`
+  - Removed deferred gallery navigation race and added mounted-safe checks
+    - `lib/ui/screens/receipt/receipt_screen.dart`
+  - CSV export now handles empty month and file/share errors cleanly
+    - `lib/ui/screens/auditreport/audit_report_screen.dart`
 
 ## Build output
 

@@ -2831,18 +2831,19 @@ class _ReceiptScreenState extends BaseState<ReceiptScreen> with BasicScreen {
     if (pickedFile == null) {
       return;
     }
+    if (!mounted) {
+      return;
+    }
     setState(() {
       imageFile = File(pickedFile.path);
     });
-    Future.delayed(Duration.zero, () async {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return UploadGalleryImage(
-          imageFile: imageFile,
-          isGallery: false,
-          receiptType: "GALLERY",
-        );
-      }));
-    });
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return UploadGalleryImage(
+        imageFile: imageFile,
+        isGallery: false,
+        receiptType: "GALLERY",
+      );
+    }));
   }
 
   Future getImage() async {

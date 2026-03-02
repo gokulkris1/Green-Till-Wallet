@@ -27,6 +27,7 @@ class _LoginScreenState extends BaseState<LoginScreen>
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _obscureText = true;
+  bool _isSigningIn = false;
 
   FirebaseAuth? auth;
 
@@ -456,6 +457,14 @@ class _LoginScreenState extends BaseState<LoginScreen>
   }
 
   Future<void> _handleEmailSignIn() async {
+    if (_isSigningIn) {
+      return;
+    }
+    if (mounted) {
+      setState(() {
+        _isSigningIn = true;
+      });
+    }
     final fcmToken = await _resolveFcmToken();
     changeLoadStatus();
     try {
@@ -482,6 +491,11 @@ class _LoginScreenState extends BaseState<LoginScreen>
       }
     } finally {
       changeLoadStatus();
+      if (mounted) {
+        setState(() {
+          _isSigningIn = false;
+        });
+      }
     }
   }
 
@@ -606,7 +620,8 @@ class _LoginScreenState extends BaseState<LoginScreen>
                             const SizedBox(
                               height: 20,
                             ),
-                            getButton(Signin, () {
+                            getButton(_isSigningIn ? "Signing in..." : Signin,
+                                () {
                               if (formGlobalKey.currentState?.validate() ??
                                   false) {
                                 _handleEmailSignIn();
