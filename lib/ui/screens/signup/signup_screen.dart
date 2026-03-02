@@ -39,6 +39,7 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
   bool _obscureText = true;
   bool _obscureTextconfirm = true;
   Currency? selectedCurrency;
+  bool _isSubmittingSignUp = false;
 
   void _toggle() {
     setState(() {
@@ -294,7 +295,8 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                         prefixIcon: ClipOval(
                           clipper: MyClipper(),
                           child: Transform.scale(
-                            child: countryCode?.flagImage() ?? const SizedBox.shrink(),
+                            child: countryCode?.flagImage() ??
+                                const SizedBox.shrink(),
                             // scale: 0.5,
                             scaleX: 0.5,
                             // scaleY: 0.5,
@@ -328,15 +330,15 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                             return "Mobile number should be at least of 7 digits";
                           } else if (value.length > 15) {
                             return "Mobile number should be less than 15 digits";
-                          }
-                          else {
+                          } else {
                             return null;
                           }
                         },
                         prefixIcon: ClipOval(
                           clipper: MyClipper(),
                           child: Transform.scale(
-                            child: countryCode?.flagImage() ?? const SizedBox.shrink(),
+                            child: countryCode?.flagImage() ??
+                                const SizedBox.shrink(),
                             // scale: 0.5,
                             scaleX: 0.5,
                             // scaleY: 0.5,
@@ -377,7 +379,7 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                                   currencyTextController.text = currency.code);
                               // "${selectedCurrency.symbol}  ${selectedCurrency.name}");
                               ;
-                                                        },
+                            },
                           );
                         },
                         suffixIcon: Image.asset(
@@ -445,7 +447,8 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
                                     return TermsAndConditionsSignupScreen();
                                   }));
                                   // return bloc.add(TermsandConditionsSignupEvent());
@@ -466,12 +469,20 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                     const SizedBox(
                       height: 20,
                     ),
-                    getButton(Signup, () async {
-                      if ((formGlobalKey.currentState?.validate() ?? false) && _value) {
+                    getButton(_isSubmittingSignUp ? "Creating..." : Signup,
+                        () async {
+                      if (_isSubmittingSignUp) {
+                        return;
+                      }
+                      if ((formGlobalKey.currentState?.validate() ?? false) &&
+                          _value) {
                         if (selectedImageFile != null) {
                           selectedImageFile =
                               await convertHEIC2PNG(selectedImageFile!.path);
                         }
+                        setState(() {
+                          _isSubmittingSignUp = true;
+                        });
                         changeLoadStatus();
                         bloc.userRepository
                             .signup(SignupModel(
@@ -489,11 +500,9 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                                 mobileNumber: _mobilenumber.text.trim(),
                                 currency: currencyTextController.text.trim(),
                                 termsandconditions: _value,
-                            countryAbbreviate:
-                                (countryCode?.code ?? "").trim()
-                        ))
+                                countryAbbreviate:
+                                    (countryCode?.code ?? "").trim()))
                             .then((value) {
-                          changeLoadStatus();
                           if (value.status == 1) {
                             print("sign up successful");
                             showMessage(value.message ?? "", () {
@@ -512,10 +521,19 @@ class _SignUpScreenState extends BaseState<SignUpScreen>
                               });
                             });
                           }
+                        }).whenComplete(() {
+                          changeLoadStatus();
+                          if (mounted) {
+                            setState(() {
+                              _isSubmittingSignUp = false;
+                            });
+                          }
                         });
 
                         //return bloc.add(EmailVerification());
-                        } else if ((formGlobalKey.currentState?.validate() ?? false) && !_value) {
+                      } else if ((formGlobalKey.currentState?.validate() ??
+                              false) &&
+                          !_value) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: getSmallText(
                               "Please agree to the terms and conditions"),

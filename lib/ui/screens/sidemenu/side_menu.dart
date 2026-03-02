@@ -243,6 +243,12 @@ class _SideMenuScreenState extends BaseState<SideMenuScreen> with BasicScreen {
                   SizedBox(
                     height: deviceHeight * 0.015,
                   ),
+                  SidemenuWidget(IC_SCAN, "Capture Receipt", () {
+                    return bloc.add(QrCodeEvent());
+                  }),
+                  SizedBox(
+                    height: deviceHeight * 0.015,
+                  ),
                   SidemenuWidget(IC_GRAPH_ICON, taxSummary, () {
                     return bloc.add(TaxSummaryEvent());
                   }),

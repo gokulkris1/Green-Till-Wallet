@@ -28,6 +28,7 @@ class _LoginScreenState extends BaseState<LoginScreen>
   final TextEditingController _password = TextEditingController();
   bool _obscureText = true;
   bool _isSigningIn = false;
+  bool _isStartingDemo = false;
 
   FirebaseAuth? auth;
 
@@ -499,6 +500,32 @@ class _LoginScreenState extends BaseState<LoginScreen>
     }
   }
 
+  Future<void> _startDemoMode() async {
+    if (_isSigningIn || _isStartingDemo) {
+      return;
+    }
+    if (mounted) {
+      setState(() {
+        _isStartingDemo = true;
+      });
+    }
+    changeLoadStatus();
+    try {
+      await bloc.userRepository.enableDemoLogin();
+      if (!mounted) {
+        return;
+      }
+      bloc.add(HomeScreenEvent());
+    } finally {
+      changeLoadStatus();
+      if (mounted) {
+        setState(() {
+          _isStartingDemo = false;
+        });
+      }
+    }
+  }
+
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -630,6 +657,26 @@ class _LoginScreenState extends BaseState<LoginScreen>
                             },
                                 width: deviceWidth * 0.8,
                                 fontsize: BUTTON_FONT_SIZE),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            SizedBox(
+                              width: deviceWidth * 0.8,
+                              child: TextButton(
+                                onPressed: (_isSigningIn || _isStartingDemo)
+                                    ? null
+                                    : _startDemoMode,
+                                child: getSmallText(
+                                  _isStartingDemo
+                                      ? "Starting demo..."
+                                      : "Continue in Demo Mode",
+                                  color: gpInfo,
+                                  weight: FontWeight.w700,
+                                  fontSize: CAPTION_TEXT_FONT_SIZE,
+                                  align: TextAlign.center,
+                                ),
+                              ),
+                            ),
                             const SizedBox(
                               height: 25,
                             ),

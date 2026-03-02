@@ -534,114 +534,204 @@ class _HomeScreenState extends BaseState<HomeScreen>
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: HORIZONTAL_PADDING),
-                                child: Row(
+                                child: Column(
                                   children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          bloc.add(TaxSummaryEvent());
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(color: gpBorder),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getSmallText(vatReclaimSummary,
-                                                  color: gpTextSecondary,
-                                                  fontSize:
-                                                      CAPTION_SMALLER_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w600,
-                                                  lines: 1),
-                                              const SizedBox(height: 4),
-                                              getSmallText("Tax Summary",
-                                                  color: gpTextPrimary,
-                                                  fontSize:
-                                                      CAPTION_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w700,
-                                                  lines: 1),
-                                            ],
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              bloc.add(QrCodeEvent());
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border:
+                                                    Border.all(color: gpBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  getSmallText("MVP core flow",
+                                                      color: gpTextSecondary,
+                                                      fontSize:
+                                                          CAPTION_SMALLER_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w600,
+                                                      lines: 1),
+                                                  const SizedBox(height: 4),
+                                                  getSmallText(
+                                                      "Capture Receipt",
+                                                      color: gpTextPrimary,
+                                                      fontSize:
+                                                          CAPTION_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w700,
+                                                      lines: 1),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              bloc.add(ReceiptEvent());
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border:
+                                                    Border.all(color: gpBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  getSmallText(
+                                                      "Organise expenses",
+                                                      color: gpTextSecondary,
+                                                      fontSize:
+                                                          CAPTION_SMALLER_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w600,
+                                                      lines: 1),
+                                                  const SizedBox(height: 4),
+                                                  getSmallText(
+                                                      "Receipt History",
+                                                      color: gpTextPrimary,
+                                                      fontSize:
+                                                          CAPTION_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w700,
+                                                      lines: 1),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              bloc.add(AuditReportsEvent());
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border:
+                                                    Border.all(color: gpBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  getSmallText(
+                                                      "Accounting export",
+                                                      color: gpTextSecondary,
+                                                      fontSize:
+                                                          CAPTION_SMALLER_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w600,
+                                                      lines: 1),
+                                                  const SizedBox(height: 4),
+                                                  getSmallText("Audit Reports",
+                                                      color: gpTextPrimary,
+                                                      fontSize:
+                                                          CAPTION_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w700,
+                                                      lines: 1),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          bloc.add(AuditReportsEvent());
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(color: gpBorder),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getSmallText("Accounting export",
-                                                  color: gpTextSecondary,
-                                                  fontSize:
-                                                      CAPTION_SMALLER_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w600,
-                                                  lines: 1),
-                                              const SizedBox(height: 4),
-                                              getSmallText("Audit Reports",
-                                                  color: gpTextPrimary,
-                                                  fontSize:
-                                                      CAPTION_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w700,
-                                                  lines: 1),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          bloc.add(BillingEvent());
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(color: gpBorder),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              getSmallText("Trial / Pro",
-                                                  color: gpTextSecondary,
-                                                  fontSize:
-                                                      CAPTION_SMALLER_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w600,
-                                                  lines: 1),
-                                              const SizedBox(height: 4),
-                                              getSmallText("Billing",
-                                                  color: gpTextPrimary,
-                                                  fontSize:
-                                                      CAPTION_TEXT_FONT_SIZE,
-                                                  weight: FontWeight.w700,
-                                                  lines: 1),
-                                            ],
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              bloc.add(TaxSummaryEvent());
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border:
+                                                    Border.all(color: gpBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  getSmallText(
+                                                      vatReclaimSummary,
+                                                      color: gpTextSecondary,
+                                                      fontSize:
+                                                          CAPTION_SMALLER_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w600,
+                                                      lines: 1),
+                                                  const SizedBox(height: 4),
+                                                  getSmallText("Tax Summary",
+                                                      color: gpTextPrimary,
+                                                      fontSize:
+                                                          CAPTION_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w700,
+                                                      lines: 1),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              bloc.add(BillingEvent());
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border:
+                                                    Border.all(color: gpBorder),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  getSmallText("Trial / Pro",
+                                                      color: gpTextSecondary,
+                                                      fontSize:
+                                                          CAPTION_SMALLER_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w600,
+                                                      lines: 1),
+                                                  const SizedBox(height: 4),
+                                                  getSmallText("Billing",
+                                                      color: gpTextPrimary,
+                                                      fontSize:
+                                                          CAPTION_TEXT_FONT_SIZE,
+                                                      weight: FontWeight.w700,
+                                                      lines: 1),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),

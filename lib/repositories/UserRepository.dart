@@ -69,8 +69,83 @@ class UserRepository {
     return UserRepository();
   }
 
+  String _normalizeBackendMessage(dynamic message,
+      {String fallback = "Something went wrong!"}) {
+    final raw = (message ?? "").toString().trim();
+    if (raw.isEmpty || raw == "null") {
+      return fallback;
+    }
+
+    final lower = raw.toLowerCase();
+    if ((lower.contains("authenticationfailedexception") ||
+            lower.contains("javax.mail") ||
+            lower.contains("authentication unsuccessful")) &&
+        (lower.contains("535") ||
+            lower.contains("mail") ||
+            lower.contains("smtp"))) {
+      return "Email service is temporarily unavailable. Please try again later.";
+    }
+
+    if (lower.contains("socketexception") ||
+        lower.contains("failed host lookup") ||
+        lower.contains("connection closed")) {
+      return "No Internet connection";
+    }
+
+    if (raw.length > 260) {
+      return "${raw.substring(0, 257)}...";
+    }
+    return raw;
+  }
+
+  String _extractMessage(dynamic body,
+      {String fallback = "Something went wrong!"}) {
+    if (body is Map<String, dynamic>) {
+      return _normalizeBackendMessage(body["message"], fallback: fallback);
+    }
+    if (body is Map) {
+      return _normalizeBackendMessage(body["message"], fallback: fallback);
+    }
+    return _normalizeBackendMessage(body, fallback: fallback);
+  }
+
   Future<bool> isLoggedIn() async {
     return prefs.getBool(SharedPrefHelper.IS_LOGGED_IN_BOOL) ?? false;
+  }
+
+  Future<LoginResponse> enableDemoLogin() async {
+    final demoPayload = <String, dynamic>{
+      "status": 1,
+      "message": "Demo login enabled",
+      "data": {
+        "userId": 999999,
+        "deviceTokenId": null,
+        "firstName": "Demo",
+        "lastName": "User",
+        "userType": "USER",
+        "profileImage": null,
+        "accessToken": "demo-access-token",
+        "phoneNumber": "",
+        "email": "demo@greentill.app",
+        "countryCode": "+353",
+        "country": "Ireland",
+        "currency": "EUR",
+        "socialMediaId": null,
+        "registerType": "DEMO",
+        "phoneVerified": true,
+        "notification": true,
+        "countryAbbreviate": "IE",
+        "customerId": "",
+        "customerIdQrImage": ""
+      }
+    };
+
+    prefs.putBool(SharedPrefHelper.IS_LOGGED_IN_BOOL, true);
+    prefs.putString(SharedPrefHelper.ACCESS_TOKEN_STRING, "demo-access-token");
+    prefs.putString(SharedPrefHelper.USER_ID, "999999");
+    prefs.putString(SharedPrefHelper.USER_DATA, jsonEncode(demoPayload));
+
+    return LoginResponse.fromJson(demoPayload);
   }
 
   //done
@@ -426,9 +501,7 @@ class UserRepository {
             print(value);
             if (value.data["status"] == 0) {
               return SignupResponse(
-                  data: null,
-                  message: value.data["message"] ?? "Something went wrong!",
-                  status: 0);
+                  data: null, message: _extractMessage(value.data), status: 0);
             } else {
               //prefs.putBool(SharedPrefHelper.IS_ACCOUNT_CREATED_BOOL, true);
               prefs.putString(SharedPrefHelper.USER_DATA, value.toString());
@@ -438,12 +511,13 @@ class UserRepository {
             }
           } else {
             return SignupResponse(
-                data: null,
-                message: value.data["message"] ?? "Something went wrong!",
-                status: 0);
+                data: null, message: _extractMessage(value.data), status: 0);
           }
         } catch (e) {
-          return SignupResponse(data: null, message: e.toString(), status: 0);
+          return SignupResponse(
+              data: null,
+              message: _normalizeBackendMessage(e.toString()),
+              status: 0);
         }
       });
     } on SocketException {
@@ -483,9 +557,7 @@ class UserRepository {
             print(map);
             if (map["status"] == 0) {
               return ForgotPasswordResponse(
-                  data: null,
-                  message: map["message"] ?? "Something went wrong!",
-                  status: 0);
+                  data: null, message: _extractMessage(map), status: 0);
             } else {
               ForgotPasswordResponse data =
                   ForgotPasswordResponse.fromJson(map);
@@ -496,13 +568,13 @@ class UserRepository {
           } else {
             var map = json.decode(value.body);
             return ForgotPasswordResponse(
-                data: null,
-                message: map["message"] ?? "Something went wrong!",
-                status: 0);
+                data: null, message: _extractMessage(map), status: 0);
           }
         } catch (e) {
           return ForgotPasswordResponse(
-              data: null, message: e.toString(), status: 0);
+              data: null,
+              message: _normalizeBackendMessage(e.toString()),
+              status: 0);
         }
       });
     } on SocketException {

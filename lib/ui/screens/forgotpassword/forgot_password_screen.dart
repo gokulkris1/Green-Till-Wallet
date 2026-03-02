@@ -17,6 +17,7 @@ class _ForgotPasswordScreenState extends BaseState<ForgotPasswordScreen>
     with BasicScreen, InputValidationMixin {
   final TextEditingController _email = TextEditingController();
   final formGlobalKey = GlobalKey<FormState>();
+  bool _isSendingInstruction = false;
 
   @override
   void dispose() {
@@ -24,6 +25,7 @@ class _ForgotPasswordScreenState extends BaseState<ForgotPasswordScreen>
     super.dispose();
     _email.dispose();
   }
+
   @override
   Widget buildBody(BuildContext context) {
     return Scaffold(
@@ -32,7 +34,8 @@ class _ForgotPasswordScreenState extends BaseState<ForgotPasswordScreen>
       appBar: AppBar(
         backgroundColor: colorWhite,
         elevation: 0,
-        title: appBarHeader(forgotPassword,bold: true,weight: FontWeight.w800),
+        title:
+            appBarHeader(forgotPassword, bold: true, weight: FontWeight.w800),
         centerTitle: false,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_outlined, color: Colors.black),
@@ -74,10 +77,20 @@ class _ForgotPasswordScreenState extends BaseState<ForgotPasswordScreen>
                   const SizedBox(
                     height: 20,
                   ),
-                  getButton(sendInstruction, () {
+                  getButton(
+                      _isSendingInstruction ? "Sending..." : sendInstruction,
+                      () {
+                    if (_isSendingInstruction) {
+                      return;
+                    }
                     if (formGlobalKey.currentState?.validate() ?? false) {
+                      setState(() {
+                        _isSendingInstruction = true;
+                      });
                       changeLoadStatus();
-                      bloc.userRepository.forgotpassword(_email.text.trim()).then((value) {
+                      bloc.userRepository
+                          .forgotpassword(_email.text.trim())
+                          .then((value) {
                         changeLoadStatus();
                         if (value.status == 1) {
                           print("mail has been sent");
@@ -96,10 +109,15 @@ class _ForgotPasswordScreenState extends BaseState<ForgotPasswordScreen>
                             });
                           });
                         }
+                      }).whenComplete(() {
+                        if (mounted) {
+                          setState(() {
+                            _isSendingInstruction = false;
+                          });
+                        }
                       });
                       //return bloc.add(PasswordRecover());
                     }
-
                   }, width: deviceWidth * 0.8, fontsize: BUTTON_FONT_SIZE),
                 ],
               ),

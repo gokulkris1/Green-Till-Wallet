@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 15:12:00 GMT
+Last updated: 2026-03-02 15:30:00 GMT
 
 ## Completed in this session
 
@@ -52,6 +52,19 @@ Last updated: 2026-03-02 15:12:00 GMT
     - `lib/ui/screens/receipt/feedback_receipt_screen.dart`
   - Login social button rendering now avoids `Platform.isIOS` checks on web runtime
     - `lib/ui/screens/login/login_screen.dart`
+- MVP stabilization pass #5 (test unblockers + receipt-first UX):
+  - Added one-tap **Demo Mode** login for QA/testing without backend account provisioning
+    - `lib/repositories/UserRepository.dart`
+    - `lib/ui/screens/login/login_screen.dart`
+  - Sign-up and forgot-password now prevent duplicate submits (in-flight request guards)
+    - `lib/ui/screens/signup/signup_screen.dart`
+    - `lib/ui/screens/forgotpassword/forgot_password_screen.dart`
+  - Backend SMTP exception handling hardened in repository responses with normalized user-facing messages
+    - `lib/repositories/UserRepository.dart`
+  - Home screen quick actions now prioritize receipt flow (Capture Receipt + Receipt History at top action row)
+    - `lib/ui/screens/homepage/home_screen.dart`
+  - Side menu now includes direct **Capture Receipt** entry point
+    - `lib/ui/screens/sidemenu/side_menu.dart`
 
 ## Build output
 
@@ -67,6 +80,5 @@ Last updated: 2026-03-02 15:12:00 GMT
 
 ## Current test blocker
 
-- Signup / forgot-password can fail with backend SMTP auth error (`javax.mail.AuthenticationFailedException 535`).
-- App-side fix added: raw backend exception is now normalized to a clean user-facing message.
-- This is a backend mail provider/auth issue and needs server credentials fix for full sign-up testing.
+- Backend SMTP credentials are still failing for sign-up/forgot-password (`javax.mail.AuthenticationFailedException 535`).
+- App now surfaces a clean message and provides **Demo Mode** login so QA can continue without waiting on mail server fixes.
