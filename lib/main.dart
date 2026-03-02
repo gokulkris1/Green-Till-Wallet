@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:greentill/config/runtime_config.dart';
 import 'package:greentill/navigation/navigation_page.dart';
 import 'package:greentill/preview/preview_app.dart';
 import 'package:greentill/ui/res/app_localizations.dart';
@@ -37,6 +38,7 @@ Future<void> main() async {
 
   // SharedPreference initialization
   await SharedPrefHelper.createInstance();
+  debugPrint("GreenTill API base: ${RuntimeConfig.apiBaseUrl}");
   if (!kIsWeb) {
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -120,7 +122,6 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => NavigationPage(),
 
         // When navigating to the "/second" route, build the SecondScreen widget.
-
       },
       navigatorKey: navigatorKey,
 

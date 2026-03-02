@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:greentill/base/base_screen.dart';
 import 'package:greentill/bloc/main_bloc.dart';
+import 'package:greentill/config/runtime_config.dart';
 import 'package:greentill/ui/res/color_resources.dart';
 import 'package:greentill/ui/res/dimen_resources.dart';
 import 'package:greentill/ui/res/image_resources.dart';
@@ -21,6 +22,155 @@ class SideMenuScreen extends BaseStatefulWidget {
 class _SideMenuScreenState extends BaseState<SideMenuScreen> with BasicScreen {
   bool _isInAsyncCall = false;
   String userid = prefs.getString(SharedPrefHelper.USER_ID);
+  late final TextEditingController _apiBaseUrlController;
+  bool _isCheckingApiEndpoint = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiBaseUrlController =
+        TextEditingController(text: RuntimeConfig.apiBaseUrl);
+  }
+
+  @override
+  void dispose() {
+    _apiBaseUrlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveApiEndpoint(
+      String value, BuildContext dialogContext) async {
+    final raw = value.trim();
+    final parsed = Uri.tryParse(raw);
+    final isValidUrl =
+        parsed != null && parsed.hasScheme && parsed.host.isNotEmpty;
+    if (!isValidUrl) {
+      ScaffoldMessenger.of(dialogContext).showSnackBar(
+        const SnackBar(content: Text("Enter a valid API URL (https://...)")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isCheckingApiEndpoint = true;
+    });
+    final isReachable =
+        await bloc.userRepository.isApiReachable(customBaseUrl: raw);
+    if (mounted) {
+      setState(() {
+        _isCheckingApiEndpoint = false;
+      });
+    }
+    if (!isReachable) {
+      ScaffoldMessenger.of(dialogContext).showSnackBar(
+        const SnackBar(content: Text("API is not reachable from this device.")),
+      );
+      return;
+    }
+
+    RuntimeConfig.setApiBaseUrlOverride(raw);
+    if (mounted) {
+      Navigator.pop(dialogContext);
+    }
+    showMessage("API endpoint saved. Restart app to apply across all screens.",
+        () {
+      if (mounted) {
+        setState(() {
+          isShowMessage = false;
+        });
+      }
+    });
+  }
+
+  void _openApiSettingsDialog() {
+    _apiBaseUrlController.text = RuntimeConfig.apiBaseUrl;
+    showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text("API Endpoint"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Set backend URL used by the app.",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _apiBaseUrlController,
+                    decoration: const InputDecoration(
+                      hintText: "https://api.greentill.co",
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    RuntimeConfig.hasApiOverride
+                        ? "Using custom endpoint override"
+                        : "Using default app endpoint",
+                    style:
+                        const TextStyle(fontSize: 12, color: gpTextSecondary),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: _isCheckingApiEndpoint
+                      ? null
+                      : () {
+                          RuntimeConfig.clearApiBaseUrlOverride();
+                          _apiBaseUrlController.text = RuntimeConfig.apiBaseUrl;
+                          setDialogState(() {});
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text("API endpoint reset to default.")),
+                          );
+                        },
+                  child: const Text("Reset"),
+                ),
+                TextButton(
+                  onPressed: _isCheckingApiEndpoint
+                      ? null
+                      : () async {
+                          final isReachable = await bloc.userRepository
+                              .isApiReachable(
+                                  customBaseUrl:
+                                      _apiBaseUrlController.text.trim());
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            SnackBar(
+                              content: Text(isReachable
+                                  ? "API reachable."
+                                  : "API not reachable."),
+                            ),
+                          );
+                        },
+                  child: const Text("Test"),
+                ),
+                TextButton(
+                  onPressed: _isCheckingApiEndpoint
+                      ? null
+                      : () async {
+                          await _saveApiEndpoint(
+                              _apiBaseUrlController.text.trim(), dialogContext);
+                        },
+                  child: _isCheckingApiEndpoint
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text("Save"),
+                ),
+              ],
+            );
+          });
+        });
+  }
 
   @override
   Widget buildBody(BuildContext context) {
@@ -245,6 +395,12 @@ class _SideMenuScreenState extends BaseState<SideMenuScreen> with BasicScreen {
                   ),
                   SidemenuWidget(IC_SCAN, "Capture Receipt", () {
                     return bloc.add(QrCodeEvent());
+                  }),
+                  SizedBox(
+                    height: deviceHeight * 0.015,
+                  ),
+                  SidemenuWidget(IC_INFORMATION, "API Endpoint", () {
+                    _openApiSettingsDialog();
                   }),
                   SizedBox(
                     height: deviceHeight * 0.015,

@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 18:18:00 GMT
+Last updated: 2026-03-02 18:45:00 GMT
 
 ## Completed in this session
 
@@ -78,6 +78,15 @@ Last updated: 2026-03-02 18:18:00 GMT
     - `tools/check_api_health.sh`
   - Verified `greentill-api.apps.openxcell.dev` is reachable from this machine
   - Verified `api.greentill.co` is currently not DNS-resolvable (NXDOMAIN), so production domain/DNS needs fix before go-live
+- API hook-up pass (app runtime wiring):
+  - Added runtime API override config (so endpoint can be changed inside app without rebuilding)
+    - `lib/config/runtime_config.dart`
+  - User repository now reads API base URL from runtime config and includes API reachability checker
+    - `lib/repositories/UserRepository.dart`
+  - Side menu now has `API Endpoint` settings dialog with Test / Save / Reset actions
+    - `lib/ui/screens/sidemenu/side_menu.dart`
+  - App startup log now prints active API base URL for easier diagnostics
+    - `lib/main.dart`
 
 ## Build output
 

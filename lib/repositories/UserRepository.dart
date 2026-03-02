@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:greentill/config/app_config.dart';
+import 'package:greentill/config/runtime_config.dart';
 import 'package:greentill/models/responses/add_storecard_response.dart';
 import 'package:greentill/models/responses/all_notification_delete_response.dart';
 import 'package:greentill/models/responses/change_password_response.dart';
@@ -52,8 +52,8 @@ import '../models/responses/redeem_stamp_voucher_response.dart';
 class UserRepository {
   SharedPrefHelper prefs = SharedPrefHelper.instance;
 
-  final String baseUrl = AppConfig.apiBaseUrl;
-  final String baseUrlHttps = AppConfig.apiBaseHost;
+  String get baseUrl => RuntimeConfig.apiBaseUrl;
+  String get baseUrlHttps => RuntimeConfig.apiBaseHost;
 
   UserRepository();
 
@@ -103,6 +103,27 @@ class UserRepository {
 
   Future<bool> isLoggedIn() async {
     return prefs.getBool(SharedPrefHelper.IS_LOGGED_IN_BOOL) ?? false;
+  }
+
+  Future<bool> isApiReachable({String? customBaseUrl}) async {
+    final resolvedBaseUrl = (customBaseUrl ?? baseUrl).trim();
+    if (resolvedBaseUrl.isEmpty) {
+      return false;
+    }
+    final uri = Uri.tryParse("$resolvedBaseUrl/api/user/login");
+    if (uri == null) {
+      return false;
+    }
+    try {
+      final response =
+          await http.Client().get(uri).timeout(const Duration(seconds: 10));
+      // GET /login returns 405 on this backend; treat 4xx as reachable host.
+      return response.statusCode >= 400 && response.statusCode < 500;
+    } on SocketException {
+      return false;
+    } on TimeoutException {
+      return false;
+    }
   }
 
   Future<LoginResponse> enableDemoLogin() async {
