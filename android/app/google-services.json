@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "768736731081",
+    "project_id": "greentillpop-1643020176054",
+    "storage_bucket": "greentillpop-1643020176054.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768736731081:android:f36dfb33bc69a6dda95218",
+        "android_client_info": {
+          "package_name": "com.greentillpop.apk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768736731081-cesonr44fiadrgkh1m3iueqis4hd233m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greentillpop.apk",
+            "certificate_hash": "d1291ad155dff4d3ed8bd2d07e1c0093fa257807"
+          }
+        },
+        {
+          "client_id": "768736731081-gmsrfunrp91n9818oio1s33tboiiepsg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greentillpop.apk",
+            "certificate_hash": "b63286da6ede1555e749dc8c5bd7feaa8ee04009"
+          }
+        },
+        {
+          "client_id": "768736731081-lr143u7descjcjlt03j5bh4hgpsns195.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greentillpop.apk",
+            "certificate_hash": "e6e55dd9082f9d5800c8f445b8eb8cd32a85177c"
+          }
+        },
+        {
+          "client_id": "768736731081-q5jlnpr0pd128kpbg36k4pol1ienoo3u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greentillpop.apk",
+            "certificate_hash": "c00f9669f19fe7a8558e19456c6b5d55ed61aea2"
+          }
+        },
+        {
+          "client_id": "768736731081-92kr6r1hr3l1m2de9d2ojl07u9nob8ij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZSPF5gxCdR7G_pzRkqLp7kAqdNWVRJGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768736731081-1vimu0e52h3qabb65s1himt5bk50q0lr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "768736731081-73lcd2lksau2rtvn3kd17e72v558inbr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.greentill"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768736731081:android:8c38bc924c759a32a95218",
+        "android_client_info": {
+          "package_name": "green.till.receipt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768736731081-0vgr7fqijf8i8a24ck54vfsffh2r18q3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "fb2ff8d29cba819cd092349112492d6b155f8f32"
+          }
+        },
+        {
+          "client_id": "768736731081-4qeehvgpf8g9sbo4hr4tm3u46c1vs9l9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "d468cb71955a61d184e82b9c989a747cd04198d1"
+          }
+        },
+        {
+          "client_id": "768736731081-5uhpficn0ko1un88ecic5hsh5fjdhr66.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "9f203b0faaf24e2d9534d26de5c3c293975bf53c"
+          }
+        },
+        {
+          "client_id": "768736731081-76grekgqqmsusd9pesjenk4f0ot75an9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "c00f9669f19fe7a8558e19456c6b5d55ed61aea2"
+          }
+        },
+        {
+          "client_id": "768736731081-92vt3bghbohik093831s7o523f64to0g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "9c719607ef8814af5290769651fbfa59844d213f"
+          }
+        },
+        {
+          "client_id": "768736731081-uuaiftmpvc3ntt28anamjol1e26qt6um.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "green.till.receipt",
+            "certificate_hash": "b63286da6ede1555e749dc8c5bd7feaa8ee04009"
+          }
+        },
+        {
+          "client_id": "768736731081-92kr6r1hr3l1m2de9d2ojl07u9nob8ij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZSPF5gxCdR7G_pzRkqLp7kAqdNWVRJGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768736731081-1vimu0e52h3qabb65s1himt5bk50q0lr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "768736731081-73lcd2lksau2rtvn3kd17e72v558inbr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.greentill"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

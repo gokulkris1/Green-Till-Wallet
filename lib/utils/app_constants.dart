@@ -1,4 +1,5 @@
-// ignore_for_file: constant_identifier_names
+import 'package:flutter/cupertino.dart';
+import 'package:greentill/models/common/globals.dart';
 
 const MOBILE_PATTERN = r'^(?:[+0]9)?[0-9]{10}$';
 const EMAIL_PATTERN =
@@ -7,3 +8,6 @@ const ddMMMyyFormat = "dd MMM, yyyy";
 // const PASSWORD_PATTERN = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
 const PASSWORD_PATTERN = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
 // const APP_ID = "";
+
+double get deviceHeight => MediaQuery.of(Globals.globalContext!).size.height;
+double get deviceWidth => MediaQuery.of(Globals.globalContext!).size.width;

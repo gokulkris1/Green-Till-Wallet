@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppLocalizations extends ChangeNotifier {
-  AppLocalizations(this.locale);
-
-  final Locale locale;
+  Locale locale;
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
+
+  AppLocalizations(this.locale);
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
@@ -17,13 +17,21 @@ class AppLocalizations extends ChangeNotifier {
 
   Map<String, String> _localizedStrings = {};
 
+  changeLanguage(Locale selectedLocale) async {
+    this.locale = selectedLocale;
+    await this.load();
+  }
+
   Future<bool> load() async {
-    final jsonString =
+    print(locale.languageCode);
+    String jsonString =
         await rootBundle.loadString('assets/lang/${locale.languageCode}.json');
-    final Map<String, dynamic> jsonMap = json.decode(jsonString);
+    Map<String, dynamic> jsonMap = json.decode(jsonString);
+
     _localizedStrings = jsonMap.map((key, value) {
       return MapEntry(key, value.toString());
     });
+
     return true;
   }
 
@@ -34,100 +42,104 @@ class AppLocalizations extends ChangeNotifier {
   //following are the keys that added in json file
   String get test => translate("test");
 
-  String get welcomeBack => translate("Welcome_back");
+  String get Welcome_back => translate("Welcome_back");
 
-  String get signInToYourAccount => translate("Sign_in_to_your_account");
+  String get Sign_in_to_your_account => translate("Sign_in_to_your_account");
 
-  String get createYourAccount => translate("Craete_your_account");
+  String get Craete_your_account => translate("Craete_your_account");
 
-  String get firstName => translate("First_Name");
+  String get First_Name => translate("First_Name");
 
-  String get lastName => translate("Last_Name");
+  String get Last_Name => translate("Last_Name");
 
-  String get confirmPassword => translate("Confirm_Password");
+  String get Confirm_Password => translate("Confirm_Password");
 
-  String get signingText => translate("Signing_Text");
+  String get Signing_Text => translate("Signing_Text");
 
-  String get and => translate("And");
+  String get And => translate("And");
 
-  String get privacyPolicy => translate("Privacy_Policy");
+  String get Privacy_Policy => translate("Privacy_Policy");
 
-  String get termOfUse => translate("Term_of_use");
+  String get Term_of_use => translate("Term_of_use");
 
-  String get password => translate("Password");
+  String get Password => translate("Password");
 
-  String get enterPassword => translate("Enter_Password");
+  String get Enter_Password => translate("Enter_Password");
 
-  String get reEnterPassword => translate("Re_Enter_Password");
+  String get Re_Enter_Password => translate("Re_Enter_Password");
 
-  String get email => translate("Email");
+  String get Email => translate("Email");
 
-  String get username => translate("Username");
+  String get Username => translate("Username");
 
-  String get enterEmail => translate("Enter_Email_Here");
+  String get Enter_Email => translate("Enter_Email_Here");
 
-  String get enterFirstName => translate("Enter_First_Name");
+  String get Enter_First_Name => translate("Enter_First_Name");
 
-  String get enterLastName => translate("Enter_Last_Name");
+  String get Enter_Last_Name => translate("Enter_Last_Name");
 
-  String get forgotPassword => translate("Forgot_Password");
+  String get Forgot_Password => translate("Forgot_Password");
 
-  String get login => translate("Login");
+  String get Login => translate("Login");
 
-  String get dontHaveAccount => translate("Dont_have_an_account");
+  String get Dont_have_an_account => translate("Dont_have_an_account");
 
-  String get signUp => translate("Sign_Up");
+  String get Sign_Up => translate("Sign_Up");
 
-  String get done => translate("Done");
+  String get Done => translate("Done");
 
-  String get forgotPasswordText => translate("Forgot_Password_Text");
+  String get Forgot_Password_Text => translate("Forgot_Password_Text");
 
-  String get shopByCategory => translate("SHOP_BY_CATEGORY");
+  String get SHOP_BY_CATEGORY => translate("SHOP_BY_CATEGORY");
 
-  String get searchText => translate("Search_Text");
+  String get Search_Text => translate("Search_Text");
 
-  String get category => translate("Category");
+  String get Category => translate("Category");
 
-  String get designer => translate("Designer");
+  String get Designer => translate("Designer");
 
-  String get size => translate("Size");
+  String get Size => translate("Size");
 
-  String get condition => translate("Condition");
+  String get Condition => translate("Condition");
 
-  String get price => translate("Price");
+  String get Price => translate("Price");
 
-  String get color => translate("Color");
+  String get Color => translate("Color");
 
-  String get newArrivals => translate("New_Arrivals");
+  String get New_Arrivals => translate("New_Arrivals");
 
-  String get filter => translate("Filter");
+  String get Filter => translate("Filter");
 
-  String get clearAll => translate("Clear_All");
+  String get Clear_All => translate("Clear_All");
 
-  String get cancel => translate("Cancel");
+  String get Cancel => translate("Cancel");
 
-  String get apply => translate("Apply");
+  String get Apply => translate("Apply");
 
-  String get reset => translate("Reset");
-  String get welcome => translate("Welcome to Green Till");
+  String get Reset => translate("Reset");
+  String get Welcome => translate("Welcome to Green Till");
 }
 
 class _AppLocalizationsDelegate
     extends LocalizationsDelegate<AppLocalizations> {
+  // This delegate instance will never change (it doesn't even have fields!)
+  // It can provide a constant constructor.
   const _AppLocalizationsDelegate();
 
   @override
   bool isSupported(Locale locale) {
+    // Include all of your supported language codes here
     return ['en'].contains(locale.languageCode);
   }
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    final localizations = AppLocalizations(locale);
+    // AppLocalizations class is where the JSON loading actually runs
+    AppLocalizations localizations = new AppLocalizations(locale);
     await localizations.load();
     return localizations;
   }
 
   @override
-  bool shouldReload(_AppLocalizationsDelegate old) => false;
+  bool shouldReload(_AppLocalizationsDelegate old) => true;
 }

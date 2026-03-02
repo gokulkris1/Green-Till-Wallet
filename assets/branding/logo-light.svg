@@ -1,0 +1,10 @@
+
+<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(4, 6) scale(0.28)">
+    <rect x="8" y="8" width="52" height="52" rx="12" fill="#0f172a"/>
+    <path d="M82 8 H116 C118.209 8 120 9.79086 120 12 V46 C120 53.732 113.732 60 106 60 H72 C69.7909 60 68 58.2091 68 56 V22 C68 14.268 74.268 8 82 8 Z" fill="#22c55e"/>
+    <rect x="8" y="68" width="52" height="52" rx="12" fill="#0f172a"/>
+    <rect x="68" y="68" width="52" height="52" rx="12" fill="#0f172a"/>
+  </g>
+  <text x="50" y="28" fill="#0f172a" style="font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Green Pay</text>
+</svg>

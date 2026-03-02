@@ -1,12 +1,11 @@
 class CustomException implements Exception {
-  CustomException([this.message, this.prefix = ""]);
+  final _message;
+  final _prefix;
 
-  final String? message;
-  final String prefix;
+  CustomException([this._message, this._prefix]);
 
-  @override
   String toString() {
-    return "$prefix${message ?? ""}";
+    return "$_prefix$_message";
   }
 }
 

@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Till 2026 MVP Wireframes</title>
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <style>
+      :root {
+        --gp-dark: #0f172a;
+        --gp-green: #22c55e;
+        --gp-light: #f8fafc;
+        --gp-grad-start: #4ade80;
+        --gp-grad-end: #16a34a;
+        --gp-text-secondary: #64748b;
+        --gp-text-muted: #94a3b8;
+        --gp-border: #e2e8f0;
+        --gp-info: #3b82f6;
+        --gp-warning: #ef4444;
+        --gp-gold: #fbbf24;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: "Avenir Next", "Manrope", "SF Pro Text", sans-serif;
+        color: var(--gp-dark);
+        background:
+          radial-gradient(circle at 8% 10%, #dcfce7 0%, transparent 28%),
+          radial-gradient(circle at 94% 84%, #e0f2fe 0%, transparent 35%),
+          linear-gradient(165deg, #f8fafc 0%, #eef2ff 100%);
+      }
+
+      .header {
+        max-width: 1400px;
+        margin: 0 auto 20px auto;
+        padding: 16px 18px;
+        border-radius: 16px;
+        border: 1px solid var(--gp-border);
+        background: rgba(248, 250, 252, 0.88);
+        backdrop-filter: blur(8px);
+      }
+
+      .header h1 {
+        margin: 0 0 6px 0;
+        font-size: 24px;
+        line-height: 1.1;
+      }
+
+      .header p {
+        margin: 0;
+        color: var(--gp-text-secondary);
+      }
+
+      .board {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 22px;
+      }
+
+      .screen-block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .screen-title {
+        font-size: 12px;
+        color: var(--gp-text-secondary);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: 760px;
+        border-radius: 30px;
+        border: 10px solid #111827;
+        background: var(--gp-light);
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(2, 6, 23, 0.24);
+        position: relative;
+      }
+
+      .notch {
+        width: 36%;
+        height: 18px;
+        border-radius: 12px;
+        background: #111827;
+        margin: 8px auto 10px auto;
+      }
+
+      .app {
+        padding: 14px 14px 80px 14px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .brand img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .chip.green {
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        color: #15803d;
+        background: rgba(34, 197, 94, 0.12);
+      }
+
+      .chip.blue {
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        color: #1d4ed8;
+        background: rgba(59, 130, 246, 0.12);
+      }
+
+      .chip.orange {
+        border: 1px solid rgba(251, 191, 36, 0.4);
+        color: #92400e;
+        background: rgba(251, 191, 36, 0.15);
+      }
+
+      .hero {
+        border-radius: 18px;
+        padding: 14px;
+        color: #f0fdf4;
+        background: linear-gradient(
+          130deg,
+          var(--gp-grad-start) 0%,
+          var(--gp-grad-end) 100%
+        );
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.2;
+      }
+
+      .hero p {
+        margin: 6px 0 0 0;
+        font-size: 12px;
+        opacity: 0.92;
+      }
+
+      .cards-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .stat {
+        background: #fff;
+        border: 1px solid var(--gp-border);
+        border-radius: 14px;
+        padding: 10px;
+      }
+
+      .stat .label {
+        font-size: 10px;
+        color: var(--gp-text-secondary);
+        margin-bottom: 4px;
+      }
+
+      .stat .value {
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .section-title {
+        margin: 14px 0 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .section-title span {
+        color: var(--gp-info);
+        font-weight: 600;
+        font-size: 11px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 36px 1fr auto;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--gp-border);
+        border-radius: 12px;
+        background: #fff;
+        padding: 8px;
+      }
+
+      .icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--gp-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gp-text-secondary);
+        background: #fff;
+      }
+
+      .row h4 {
+        margin: 0;
+        font-size: 12px;
+      }
+
+      .row p {
+        margin: 3px 0 0 0;
+        color: var(--gp-text-secondary);
+        font-size: 10px;
+      }
+
+      .amount {
+        text-align: right;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .amount small {
+        display: block;
+        color: var(--gp-text-secondary);
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        min-height: 38px;
+      }
+
+      .btn.primary {
+        color: #f0fdf4;
+        background: linear-gradient(
+          130deg,
+          var(--gp-grad-start) 0%,
+          var(--gp-grad-end) 100%
+        );
+      }
+
+      .btn.ghost {
+        color: var(--gp-dark);
+        background: #fff;
+        border-color: var(--gp-border);
+      }
+
+      .tabbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-top: 1px solid var(--gp-border);
+        background: #fff;
+        height: 62px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: center;
+        text-align: center;
+        font-size: 10px;
+        color: var(--gp-text-secondary);
+      }
+
+      .tabbar .active {
+        color: var(--gp-green);
+        font-weight: 700;
+      }
+
+      .search {
+        border: 1px solid var(--gp-border);
+        border-radius: 12px;
+        padding: 9px 11px;
+        color: var(--gp-text-muted);
+        font-size: 11px;
+        background: #fff;
+      }
+
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .receipt-shot {
+        border: 1px dashed #9ca3af;
+        background: #f9fafb;
+        border-radius: 12px;
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gp-text-secondary);
+        font-size: 11px;
+      }
+
+      .field {
+        border: 1px solid var(--gp-border);
+        border-radius: 10px;
+        background: #fff;
+        padding: 8px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 9px;
+        color: var(--gp-text-secondary);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .field strong {
+        font-size: 12px;
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--gp-border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .segmented div {
+        text-align: center;
+        padding: 9px 4px;
+        font-size: 11px;
+        font-weight: 700;
+        background: #fff;
+      }
+
+      .segmented .on {
+        background: rgba(34, 197, 94, 0.15);
+        color: #166534;
+      }
+
+      .menu {
+        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .menu div {
+        border: 1px solid var(--gp-border);
+        border-radius: 12px;
+        background: #fff;
+        padding: 11px;
+        font-size: 12px;
+      }
+
+      .kpi {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+
+      .kpi div {
+        background: #fff;
+        border: 1px solid var(--gp-border);
+        border-radius: 10px;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .kpi strong {
+        display: block;
+        font-size: 12px;
+      }
+
+      .kpi span {
+        font-size: 9px;
+        color: var(--gp-text-secondary);
+      }
+
+      .paywall {
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        background: #f0fdf4;
+        border-radius: 12px;
+        padding: 10px;
+      }
+
+      .paywall h4 {
+        margin: 0 0 4px 0;
+        font-size: 12px;
+      }
+
+      .paywall p {
+        margin: 0;
+        color: #166534;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="header">
+      <h1>Green Till 2026: High-Fidelity Mobile Wireframes</h1>
+      <p>
+        Receipt-first MVP for contractors: capture, organize, recover tax, and
+        export audit-ready reports with billing from day 1.
+      </p>
+    </section>
+
+    <main class="board">
+      <section class="screen-block">
+        <div class="screen-title">01 · Home (Receipt-First)</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">
+                <img src="/assets/branding/logo-mark.svg" alt="logo" />
+                Green Till Wallet
+              </div>
+              <span class="chip green">30-day Trial</span>
+            </div>
+            <div class="hero">
+              <h2>Stay organised and tax-ready</h2>
+              <p>Capture receipts in under 10 seconds.</p>
+            </div>
+            <div class="cards-2">
+              <div class="stat">
+                <div class="label">Receipts this month</div>
+                <div class="value">34</div>
+              </div>
+              <div class="stat">
+                <div class="label">Potential VAT reclaim</div>
+                <div class="value">EUR 412</div>
+              </div>
+            </div>
+            <div class="section-title">
+              Quick Actions
+            </div>
+            <div class="action-row">
+              <div class="btn primary">Capture Receipt</div>
+              <div class="btn ghost">Upload from Gallery</div>
+            </div>
+            <div class="section-title">
+              Latest Receipts <span>View all</span>
+            </div>
+            <div class="list">
+              <div class="row">
+                <div class="icon">TL</div>
+                <div>
+                  <h4>Tool Hub</h4>
+                  <p>01 Mar 2026 · Business</p>
+                </div>
+                <div class="amount">EUR 89.50<small>Done</small></div>
+              </div>
+              <div class="row">
+                <div class="icon">SC</div>
+                <div>
+                  <h4>Site Cafe</h4>
+                  <p>01 Mar 2026 · Personal</p>
+                </div>
+                <div class="amount">EUR 14.20<small>Done</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="active">Home</div>
+            <div>Receipts</div>
+            <div>Tax</div>
+            <div>Reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">02 · Receipts Hub</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Receipts</div>
+              <span class="chip blue">Filter</span>
+            </div>
+            <div class="search">Search by merchant, amount, VAT or date</div>
+            <div style="margin-top: 8px; display: flex; gap: 6px">
+              <span class="chip green">Business</span>
+              <span class="chip blue">Personal</span>
+              <span class="chip orange">In progress</span>
+            </div>
+            <div class="section-title">March 2026 · 34 results</div>
+            <div class="list">
+              <div class="row">
+                <div class="icon">BM</div>
+                <div>
+                  <h4>Build Mart</h4>
+                  <p>29 Feb 2026 · VAT EUR 20.60</p>
+                </div>
+                <div class="amount">EUR 123.60</div>
+              </div>
+              <div class="row">
+                <div class="icon">GS</div>
+                <div>
+                  <h4>Gas Station</h4>
+                  <p>28 Feb 2026 · VAT EUR 7.10</p>
+                </div>
+                <div class="amount">EUR 42.50</div>
+              </div>
+              <div class="row">
+                <div class="icon">PL</div>
+                <div>
+                  <h4>Plumb Supply</h4>
+                  <p>28 Feb 2026 · Processing OCR</p>
+                </div>
+                <div class="amount">EUR 71.30<small>In progress</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div>Home</div>
+            <div class="active">Receipts</div>
+            <div>Tax</div>
+            <div>Reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">03 · Capture Options</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Add New Receipt</div>
+            </div>
+            <div class="stack">
+              <div class="btn primary">Capture with Camera</div>
+              <div class="btn ghost">Upload from Gallery</div>
+              <div class="btn ghost">Upload PDF Invoice</div>
+            </div>
+            <div class="section-title">Why this works</div>
+            <div class="stack">
+              <div class="field">
+                <label>Auto extraction</label>
+                <strong>Amount, VAT, Date, Merchant</strong>
+              </div>
+              <div class="field">
+                <label>Classification</label>
+                <strong>Business / Personal toggle + category</strong>
+              </div>
+              <div class="field">
+                <label>Outcome</label>
+                <strong>Searchable + report-ready expense record</strong>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div>Home</div>
+            <div class="active">Receipts</div>
+            <div>Tax</div>
+            <div>Reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">04 · OCR Review + Categorise</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Review Receipt</div>
+              <span class="chip orange">OCR 96%</span>
+            </div>
+            <div class="receipt-shot">Receipt image preview with highlights</div>
+            <div class="stack" style="margin-top: 10px">
+              <div class="field">
+                <label>Merchant</label>
+                <strong>Build Mart Ltd</strong>
+              </div>
+              <div class="field">
+                <label>Total Amount</label>
+                <strong>EUR 123.60</strong>
+              </div>
+              <div class="field">
+                <label>VAT</label>
+                <strong>EUR 20.60</strong>
+              </div>
+              <div class="field">
+                <label>Date</label>
+                <strong>29 Feb 2026</strong>
+              </div>
+              <div class="field">
+                <label>Expense Type</label>
+                <div class="segmented">
+                  <div class="on">Business</div>
+                  <div>Personal</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 10px" class="btn primary">Save Receipt</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">05 · Receipt Detail</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Receipt Detail</div>
+              <span class="chip green">Business</span>
+            </div>
+            <div class="receipt-shot">Attached receipt + warranty docs</div>
+            <div class="stack" style="margin-top: 10px">
+              <div class="field">
+                <label>Merchant</label>
+                <strong>Build Mart Ltd</strong>
+              </div>
+              <div class="field">
+                <label>Category</label>
+                <strong>Materials</strong>
+              </div>
+              <div class="field">
+                <label>Total / VAT</label>
+                <strong>EUR 123.60 / EUR 20.60</strong>
+              </div>
+              <div class="field">
+                <label>Date</label>
+                <strong>29 Feb 2026</strong>
+              </div>
+            </div>
+            <div class="action-row" style="margin-top: 10px">
+              <div class="btn ghost">Edit</div>
+              <div class="btn ghost">Share PDF</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">06 · Side Menu IA</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="hero" style="padding: 12px">
+              <h2 style="font-size: 14px">Hi Gokul</h2>
+              <p>Contractor Plan · Trial day 8/30</p>
+            </div>
+            <div class="menu">
+              <div>Receipts</div>
+              <div>Tax Summary</div>
+              <div>Audit Reports</div>
+              <div>Billing & Subscription</div>
+              <div>Contact Support</div>
+              <div>Terms & Privacy</div>
+              <div style="border-color: #fecaca; color: #b91c1c">
+                Logout
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">07 · Recover More Tax</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Tax Recovery</div>
+              <span class="chip orange">Action Needed</span>
+            </div>
+            <div class="kpi">
+              <div>
+                <strong>EUR 412</strong><span>VAT reclaim</span>
+              </div>
+              <div>
+                <strong>7</strong><span>Missed claims</span>
+              </div>
+              <div>
+                <strong>18%</strong><span>Underclaim risk</span>
+              </div>
+            </div>
+            <div class="section-title">Missed-Claim Alerts</div>
+            <div class="list">
+              <div class="row">
+                <div class="icon">!</div>
+                <div>
+                  <h4>Fuel receipts missing VAT tags</h4>
+                  <p>4 receipts · Potential EUR 42 reclaim</p>
+                </div>
+                <div class="amount"><small>Review</small></div>
+              </div>
+              <div class="row">
+                <div class="icon">!</div>
+                <div>
+                  <h4>Tools category not marked business</h4>
+                  <p>3 receipts · Potential EUR 58 reclaim</p>
+                </div>
+                <div class="amount"><small>Fix</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div>Home</div>
+            <div>Receipts</div>
+            <div class="active">Tax</div>
+            <div>Reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">08 · Audit-Ready Export</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Monthly Report</div>
+            </div>
+            <div class="field">
+              <label>Period</label>
+              <strong>February 2026</strong>
+            </div>
+            <div class="field" style="margin-top: 8px">
+              <label>Output</label>
+              <strong>Accounting-ready PDF + CSV + receipt archive ZIP</strong>
+            </div>
+            <div class="field" style="margin-top: 8px">
+              <label>Included</label>
+              <strong>34 receipts, VAT summary, category totals, attachments</strong>
+            </div>
+            <div class="paywall" style="margin-top: 10px">
+              <h4>Premium export feature</h4>
+              <p>Unlock report generation after free trial.</p>
+            </div>
+            <div class="action-row" style="margin-top: 12px">
+              <div class="btn primary">Generate Report</div>
+              <div class="btn ghost">Preview Layout</div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div>Home</div>
+            <div>Receipts</div>
+            <div>Tax</div>
+            <div class="active">Reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen-block">
+        <div class="screen-title">09 · Billing & Trial</div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="app">
+            <div class="topbar">
+              <div class="brand">Billing</div>
+              <span class="chip green">Trial Active</span>
+            </div>
+            <div class="hero">
+              <h2>30-day free trial</h2>
+              <p>Ends on 23 Mar 2026 · No charge today</p>
+            </div>
+            <div class="stack" style="margin-top: 10px">
+              <div class="field">
+                <label>Plan</label>
+                <strong>Green Till Pro</strong>
+              </div>
+              <div class="field">
+                <label>After trial</label>
+                <strong>EUR 11.99 / month</strong>
+              </div>
+              <div class="field">
+                <label>Includes</label>
+                <strong>Unlimited reports, receipt archive, accountant export</strong>
+              </div>
+            </div>
+            <div class="btn primary" style="margin-top: 10px">
+              Start Pro Trial
+            </div>
+            <div class="btn ghost" style="margin-top: 8px">Restore Purchase</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
