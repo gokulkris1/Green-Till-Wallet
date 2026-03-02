@@ -24,8 +24,7 @@ if (flutterVersionName == null) {
 }
 android {
     namespace "green.till.receipt"
-    compileSdkVersion 35
-    buildToolsVersion "35.0.0"
+    compileSdkVersion 36
     ndkVersion "26.1.10909125"
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -45,7 +44,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "green.till.receipt"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

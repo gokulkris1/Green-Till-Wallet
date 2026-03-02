@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:greentill/base/base_screen.dart';
 import 'package:greentill/bloc/main_bloc.dart';
@@ -8,6 +10,7 @@ import 'package:greentill/utils/app_constants.dart';
 import 'package:greentill/utils/common_widgets.dart';
 import 'package:greentill/utils/shared_pref_helper.dart';
 import 'package:greentill/utils/strings.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 class BillingScreen extends BaseStatefulWidget {
   const BillingScreen({super.key});
@@ -18,16 +21,48 @@ class BillingScreen extends BaseStatefulWidget {
 
 class _BillingScreenState extends BaseState<BillingScreen> with BasicScreen {
   static const int _defaultTrialDays = 30;
+  static const Set<String> _productIds = {
+    "greentill.pro.monthly",
+    "greentill.pro.annual",
+  };
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
+
   bool isProActive = false;
   bool isTrialUsed = false;
   bool isTrialActive = false;
   int daysRemaining = 0;
   DateTime? trialEndDate;
+  bool isStoreAvailable = false;
+  bool isStoreLoading = true;
+  bool isPurchaseInProgress = false;
+  String storeStatusMessage = "";
+  List<ProductDetails> products = [];
 
   @override
   void initState() {
     super.initState();
+    _purchaseSubscription = _inAppPurchase.purchaseStream.listen(
+      _onPurchaseUpdates,
+      onDone: () {
+        _purchaseSubscription?.cancel();
+      },
+      onError: (_) {
+        if (mounted) {
+          setState(() {
+            isPurchaseInProgress = false;
+          });
+        }
+      },
+    );
     _reloadBillingState();
+    _loadStoreProducts();
+  }
+
+  @override
+  void dispose() {
+    _purchaseSubscription?.cancel();
+    super.dispose();
   }
 
   void _reloadBillingState() {
@@ -50,6 +85,107 @@ class _BillingScreenState extends BaseState<BillingScreen> with BasicScreen {
       isTrialActive = false;
     }
     setState(() {});
+  }
+
+  Future<void> _loadStoreProducts() async {
+    setState(() {
+      isStoreLoading = true;
+      storeStatusMessage = "";
+      products = [];
+    });
+    final storeAvailable = await _inAppPurchase.isAvailable();
+    if (!storeAvailable) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        isStoreAvailable = false;
+        isStoreLoading = false;
+        storeStatusMessage =
+            "Store billing is unavailable on this device right now.";
+      });
+      return;
+    }
+
+    final response = await _inAppPurchase.queryProductDetails(_productIds);
+    if (!mounted) {
+      return;
+    }
+
+    if (response.error != null) {
+      setState(() {
+        isStoreAvailable = true;
+        isStoreLoading = false;
+        storeStatusMessage = response.error?.message ?? "Unable to load plans.";
+      });
+      return;
+    }
+
+    final sortedProducts = [...response.productDetails]
+      ..sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
+    setState(() {
+      isStoreAvailable = true;
+      isStoreLoading = false;
+      products = sortedProducts;
+      if (response.notFoundIDs.isNotEmpty) {
+        storeStatusMessage =
+            "Some products are not configured yet: ${response.notFoundIDs.join(", ")}";
+      }
+    });
+  }
+
+  Future<void> _onPurchaseUpdates(
+      List<PurchaseDetails> purchaseDetailsList) async {
+    for (final purchaseDetails in purchaseDetailsList) {
+      if (purchaseDetails.status == PurchaseStatus.pending) {
+        if (mounted) {
+          setState(() {
+            isPurchaseInProgress = true;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isPurchaseInProgress = false;
+          });
+        }
+      }
+
+      if (purchaseDetails.status == PurchaseStatus.error) {
+        showMessage(
+            purchaseDetails.error?.message ??
+                "Purchase failed. Please try again.", () {
+          if (mounted) {
+            setState(() {
+              isShowMessage = false;
+            });
+          }
+        });
+      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+          purchaseDetails.status == PurchaseStatus.restored) {
+        prefs.putBool(SharedPrefHelper.BILLING_PRO_ACTIVE, true);
+        _reloadBillingState();
+      }
+
+      if (purchaseDetails.pendingCompletePurchase) {
+        await _inAppPurchase.completePurchase(purchaseDetails);
+      }
+    }
+  }
+
+  Future<void> _buyProduct(ProductDetails product) async {
+    final purchaseParam = PurchaseParam(productDetails: product);
+    setState(() {
+      isPurchaseInProgress = true;
+    });
+    await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  Future<void> _restorePurchases() async {
+    setState(() {
+      isPurchaseInProgress = true;
+    });
+    await _inAppPurchase.restorePurchases();
   }
 
   void _startTrial() {
@@ -163,20 +299,91 @@ class _BillingScreenState extends BaseState<BillingScreen> with BasicScreen {
             _featureTile("Monthly accounting-ready report export"),
             _featureTile("Receipt archive bundle for audit"),
             _featureTile("VAT reclaim insights and missed-claim alerts"),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: gpBorder),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getSmallText("Store plans",
+                      color: gpTextSecondary,
+                      fontSize: CAPTION_TEXT_FONT_SIZE,
+                      weight: FontWeight.w600),
+                  const SizedBox(height: 6),
+                  if (isStoreLoading)
+                    const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: gpGreen,
+                      ),
+                    )
+                  else if (products.isEmpty)
+                    getSmallText(
+                      isStoreAvailable
+                          ? "No active products found. Configure in App Store / Play Console."
+                          : "Store unavailable. You can continue with trial mode.",
+                      color: gpTextSecondary,
+                      lines: 3,
+                      fontSize: CAPTION_SMALLER_TEXT_FONT_SIZE,
+                    )
+                  else
+                    Column(
+                      children: products
+                          .map((product) => _storeProductTile(product))
+                          .toList(),
+                    ),
+                  if (storeStatusMessage.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    getSmallText(
+                      storeStatusMessage,
+                      color: gpImpactOrange,
+                      lines: 3,
+                      fontSize: CAPTION_SMALLER_TEXT_FONT_SIZE,
+                    ),
+                  ],
+                  if (isPurchaseInProgress) ...[
+                    const SizedBox(height: 8),
+                    getSmallText("Purchase in progress...",
+                        color: gpTextSecondary,
+                        fontSize: CAPTION_SMALLER_TEXT_FONT_SIZE),
+                  ],
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             if (!isTrialActive && !isTrialUsed && !isProActive)
               getButton(startFreeTrial, _startTrial, width: deviceWidth * 0.9),
-            if (!isProActive) ...[
+            if (!isProActive && !isStoreAvailable) ...[
               const SizedBox(height: 12),
-              getButton(upgradeToPro, _activatePro, width: deviceWidth * 0.9),
+              getButton(
+                "Unlock Pro (Dev Fallback)",
+                _activatePro,
+                width: deviceWidth * 0.9,
+              ),
             ],
             const SizedBox(height: 12),
             getButton(
               restorePurchase,
-              _activatePro,
+              _restorePurchases,
               width: deviceWidth * 0.9,
               color: gpLight,
               textColor: gpGreen,
+            ),
+            const SizedBox(height: 8),
+            getButton(
+              "Refresh Store Products",
+              _loadStoreProducts,
+              width: deviceWidth * 0.9,
+              color: Colors.white,
+              textColor: gpTextPrimary,
             ),
             const SizedBox(height: 12),
             if (!isTrialActive && isTrialUsed && !isProActive)
@@ -210,6 +417,53 @@ class _BillingScreenState extends BaseState<BillingScreen> with BasicScreen {
                 color: gpTextPrimary,
                 fontSize: SUBTITLE_FONT_SIZE,
                 weight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _storeProductTile(ProductDetails product) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: gpLight,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: gpBorder),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getSmallText(
+                  product.title,
+                  color: gpTextPrimary,
+                  fontSize: SUBTITLE_FONT_SIZE,
+                  weight: FontWeight.w700,
+                  lines: 2,
+                ),
+                if (product.description.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  getSmallText(
+                    product.description,
+                    color: gpTextSecondary,
+                    fontSize: CAPTION_SMALLER_TEXT_FONT_SIZE,
+                    lines: 3,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          getButton(
+            product.price,
+            () => _buyProduct(product),
+            width: 110,
+            height: 38,
+            fontsize: CAPTION_TEXT_FONT_SIZE,
           ),
         ],
       ),
