@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:greentill/models/responses/getreceiptlist_response.dart';
 import 'package:greentill/models/responses/store_list_response.dart';
@@ -668,14 +669,29 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                                 readOnly: widget.receiptFromType == "QR_SCANNED"
                                     ? true
                                     : false,
-                                keyboardType: TextInputType.number,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*[\,\.]?\d{0,2}'),
+                                  ),
+                                ],
                                 hintText: amount,
                                 validator: (text) {
-                                  if ((text?.trim() ?? "").isEmpty) {
+                                  final value = (text ?? "").trim();
+                                  if (value.isEmpty) {
                                     return "Please enter amount";
-                                  } else {
-                                    return null;
                                   }
+                                  final parsed = double.tryParse(
+                                      value.replaceAll(",", "."));
+                                  if (parsed == null) {
+                                    return "Please enter a valid amount";
+                                  }
+                                  if (parsed <= 0) {
+                                    return "Amount must be greater than zero";
+                                  }
+                                  return null;
                                 }),
                           ),
 
@@ -1003,6 +1019,7 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                               print(selectedStoreId);
                               changeLoadStatus();
                               await getAllFiles();
+                              final amountForApi = _normalizedAmountForApi();
                               bloc.userRepository
                                   .editReceiptInfo(
                                       int.parse(userid), widget.receiptid ?? 0,
@@ -1011,8 +1028,10 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
                                       // description: _description.text.trim(),
                                       currency:
                                           _currencyTextController.text.trim(),
-                                      amount: _amount.text.trim(),
-                                      timeZone: "Asia/Kolkata",
+                                      amount: amountForApi,
+                                      timeZone: DateTime.now()
+                                          .timeZoneName
+                                          .toString(),
                                       purchaseDate:
                                           pickedDate?.toIso8601String() ?? "",
                                       warrantycards: allFiles,
@@ -1079,6 +1098,15 @@ class _EditReceiptScreenState extends BaseState<EditReceiptScreen>
   bool _isEmptyField(dynamic value) {
     final text = (value ?? "").toString().trim();
     return text.isEmpty || text.toLowerCase() == "null";
+  }
+
+  String _normalizedAmountForApi() {
+    final raw = _amount.text.trim();
+    final normalized = raw.replaceAll(",", ".");
+    if (normalized.startsWith(".")) {
+      return "0$normalized";
+    }
+    return normalized;
   }
 
   bool _needsServerHydration() {

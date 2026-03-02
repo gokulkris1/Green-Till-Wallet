@@ -30,6 +30,7 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
     with BasicScreen {
   final formGlobalKey = GlobalKey<FormState>();
   final TextEditingController _feedbackcontroller = TextEditingController();
+  bool _isSubmittingFeedback = false;
   int _isMoodSelected = 2;
   List<Map<String, String>> feedbackMoods = [
     {"icon": IC_WORST_GREY, "title": "Worst", "selectedvalue": "1"},
@@ -271,10 +272,20 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                         height: deviceHeight * 0.03,
                       ),
 
-                      getButton("Submit", () async {
+                      getButton(
+                          _isSubmittingFeedback ? "Submitting..." : "Submit",
+                          () async {
+                        if (_isSubmittingFeedback) {
+                          return;
+                        }
                         if (_rating.isNotEmpty
                             // && formGlobalKey.currentState.validate()
                             ) {
+                          if (mounted) {
+                            setState(() {
+                              _isSubmittingFeedback = true;
+                            });
+                          }
                           changeLoadStatus();
                           debugPrint("ratingint" + _rating);
 
@@ -324,6 +335,12 @@ class _FeedbackReceiptScreenState extends BaseState<FeedbackReceiptScreen>
                                         .popUntil(ModalRoute.withName("/"));
                                     bloc.add(HomeScreenEvent());
                                   });
+                              });
+                            }
+                          }).whenComplete(() {
+                            if (mounted) {
+                              setState(() {
+                                _isSubmittingFeedback = false;
                               });
                             }
                           });

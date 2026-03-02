@@ -1,6 +1,6 @@
 # Green Till Build Progress
 
-Last updated: 2026-03-02 14:53:00 GMT
+Last updated: 2026-03-02 15:05:00 GMT
 
 ## Completed in this session
 
@@ -32,6 +32,15 @@ Last updated: 2026-03-02 14:53:00 GMT
     - `lib/ui/screens/receipt/receipt_screen.dart`
   - CSV export now handles empty month and file/share errors cleanly
     - `lib/ui/screens/auditreport/audit_report_screen.dart`
+- MVP stabilization pass #3 (receipt edit + feedback hardening):
+  - Receipt amount field now validates numeric decimal input and blocks invalid/zero amounts
+    - `lib/ui/screens/receipt/edit_receipt_screen.dart`
+  - Receipt edit now sends device timezone instead of a hardcoded timezone
+    - `lib/ui/screens/receipt/edit_receipt_screen.dart`
+  - OCR upload timeout increased to reduce false failures on large receipt images
+    - `lib/repositories/UserRepository.dart`
+  - Feedback submit now has in-flight guard to prevent duplicate submissions
+    - `lib/ui/screens/receipt/feedback_receipt_screen.dart`
 
 ## Build output
 

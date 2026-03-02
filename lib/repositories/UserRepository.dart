@@ -1220,7 +1220,7 @@ class UserRepository {
             // }),
             data: formData,
           )
-          .timeout(const Duration(seconds: 60))
+          .timeout(const Duration(seconds: 120))
           .then((value) async {
         print("$baseUrl/api/user/receipt/ocr?userId=$userid");
         print(value.statusCode);
